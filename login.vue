@@ -1,7 +1,7 @@
 <template>
   <div class="login-box">
-    <!-- 表单盒子 -->
-    <div class="from-box">
+    <!-- 表单容器 -->
+    <div class="form-box">
       <!-- 标题 -->
       <div class="title-box">
         <img src="../../assets/login-logo.png" alt />
@@ -9,52 +9,50 @@
         <i></i>
         <span class="sub-title">用户登录</span>
       </div>
-      <!-- 饿了么表单布局 -->
-      <el-form ref="form" :model="form">
+      <!-- 饿了么的 表单 -->
+      <el-form class="login-form" ref="form" :model="form">
         <!-- 手机号 -->
         <el-form-item>
-          <el-input placeholder="请输入手机号" v-model="form.phone" prefix-icon="el-icon-user"></el-input>
+          <el-input placeholder="请输入手机号" v-model="form.name" prefix-icon="el-icon-user"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item>
           <el-input
             placeholder="请输入密码"
-            v-model="form.password"
-            prefix-icon="el-icon-lock"
+            v-model="form.name"
             show-password
+            prefix-icon="el-icon-lock"
           ></el-input>
         </el-form-item>
         <!-- 验证码 -->
         <el-form-item>
+          <!-- 行 -->
           <el-row>
+            <!-- 列 -->
             <el-col :span="18">
-              <el-input placeholder="请输入验证码" v-model="form.YZM" prefix-icon="el-icon-key"></el-input>
+              <el-input placeholder="请输入验证码" v-model="form.name" prefix-icon="el-icon-key"></el-input>
             </el-col>
             <el-col :span="6">
-              <img src="../../assets/YZM.png" alt class="YZM" />
+              <img class="captcha" src="../../assets/captcha.jpg" alt />
             </el-col>
           </el-row>
         </el-form-item>
-
+        <!-- 用户协议 -->
         <el-form-item>
-          <el-checkbox-group v-model="form.type">
-            <el-checkbox name="type">
-              我已阅读并同意
-              <el-link type="primary">用户协议</el-link>和
-              <el-link type="primary">隐私条款</el-link>
-            </el-checkbox>
-          </el-checkbox-group>
+          <el-checkbox v-model="form.checked">
+            我已阅读并同意
+            <el-link type="primary">用户协议</el-link>和
+            <el-link type="primary">隐私条款</el-link>
+          </el-checkbox>
         </el-form-item>
-
-        <!-- 按钮 -->
+        <!-- 按钮区域 -->
         <el-form-item>
-          <el-button type="primary" class="login-btn">登录</el-button>
-          <el-button class="register-btn">注册</el-button>
+          <el-button type="primary">登录</el-button>
+          <el-button class="register-button" type="success">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
-    <!-- 右边图片 -->
-    <img class="login-src" src="../../assets/login_banner_ele.png" alt />
+    <img class="login-pic" src="../../assets/login_banner_ele.png" alt />
   </div>
 </template>
 
@@ -63,6 +61,7 @@ export default {
   name: "login",
   data() {
     return {
+      // 表单的数据
       form: {
         name: "",
         region: "",
@@ -72,12 +71,7 @@ export default {
         type: [],
         resource: "",
         desc: "",
-        // 手机
-        phone : '',
-        // 密码
-        password : '',
-        // 验证码
-        YZM : '',
+        checked: false
       }
     };
   }
@@ -86,64 +80,58 @@ export default {
 
 <style lang="less">
 .login-box {
-  // 开启弹性布局
+  /* 开启弹性布局 */
   display: flex;
-  // 上下居中
+  /* 上下居中 */
   align-items: center;
-  // 左右居中
+  /* 左右 均分 */
   justify-content: space-around;
-  // 渐变
   background: linear-gradient(
     225deg,
     rgba(20, 147, 250, 1),
     rgba(1, 198, 250, 1)
   );
   height: 100%;
-
-  .from-box {
+  .form-box {
     width: 478px;
     height: 550px;
     background-color: #f5f5f5;
-
     padding: 44px;
+    box-sizing: border-box;
+    // 标题
     .title-box {
       display: flex;
       align-items: center;
       img {
+        // emmet语法
+        // w22+h17+mr16
         width: 22px;
         height: 17px;
         margin-right: 16px;
       }
       .title {
         font-size: 24px;
+        margin-right: 14px;
+      }
+      i {
+        width: 1px;
+        height: 28px;
+        background-color: #c7c7c7;
+        margin-right: 12px;
       }
       .sub-title {
         font-size: 22px;
       }
-      i {
-        display: block;
-        width: 1px;
-        height: 28px;
-        background: rgba(199, 199, 199, 1);
-        margin-right: 12px;
-        margin-left: 14px;
-      }
     }
-    .el-form {
+    // 表单盒子
+    .login-form {
       margin-top: 27px;
-      // 两个按钮
-      .el-button {
+      // 验证码
+      .captcha {
+        height: 40px;
         width: 100%;
-        margin: 0;
       }
-      .register-btn {
-        margin-top: 26px;
-      }
-      // 验证码图片
-      .YZM {
-        width: 100%;
-        height: 42px;
-      }
+      // checkbox的样式
       .el-checkbox {
         display: flex;
         align-items: center;
@@ -152,7 +140,17 @@ export default {
           align-items: center;
         }
       }
+      // 按钮的样式
+      .el-button {
+        width: 100%;
+        margin: 0;
+      }
+      .register-button {
+        margin-top: 26px;
+      }
     }
+  }
+  .login-pic {
   }
 }
 </style>
