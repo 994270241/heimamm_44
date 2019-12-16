@@ -59,7 +59,7 @@
     <el-dialog title="用户注册" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <!-- 头像 -->
-        <el-form-item  label="头像" :label-width="formLabelWidth">
+        <el-form-item label="头像" :label-width="formLabelWidth">
           <!-- 头像上传 -->
           <el-form-item>
             <el-upload
@@ -76,40 +76,40 @@
         </el-form-item>
         <!-- 昵称-->
         <el-form-item label="昵称" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="regForm.name" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 邮箱 -->
         <el-form-item label="邮箱" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="regForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 手机 -->
         <el-form-item label="手机" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="regForm.phone" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item label="密码" :label-width="formLabelWidth">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="regForm.password" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 图形码 -->
         <el-form-item label="图形码" :label-width="formLabelWidth">
           <el-row>
             <el-col :span="16">
-              <el-input v-model="form.name" autocomplete="off"></el-input>
+              <el-input v-model="regForm.regYZM" autocomplete="off"></el-input>
             </el-col>
             <el-col :span="7" :offset="1">
+              <!-- 图片 -->
               <img :src="regCapatchUrl" @click="getregCapatchUrl" alt class="register-YZM" />
             </el-col>
           </el-row>
         </el-form-item>
         <!-- 验证码 -->
         <el-form-item label="验证码 " :label-width="formLabelWidth">
-         
-          <el-row >
+          <el-row>
             <el-col :span="16">
-               <el-input v-model="form.name" autocomplete="off"></el-input>
+              <el-input v-model="regForm.rcode" autocomplete="off"></el-input>
             </el-col>
             <el-col :span="7" :offset="1">
-              <el-button>获取用户验证码</el-button>
+              <el-button @click="getMessageCode">获取用户验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -155,9 +155,22 @@ export default {
         // 验证码
         YZM: "",
         // 勾选
-        checked: false,
-        
-       
+        checked: false
+      },
+      // 注册表单数据:
+      regForm: {
+        // 昵称:
+        name: "",
+        // 邮箱:
+        email: "",
+        // 手机号码:
+        phone: "",
+        // 密码:
+        password: "",
+        // 注册验证码
+        regYZM: "",
+        // 短信验证:
+        rcode: ""
       },
       // 验证规则
       rules: {
@@ -201,7 +214,7 @@ export default {
       //  上传地址
       imageUrl: "",
       //  注册码
-      regCapatchUrl : process.env.VUE_APP_BASEURL + "/captcha?type=login"
+      regCapatchUrl: process.env.VUE_APP_BASEURL + "/captcha?type=sendsms"
     };
   },
   methods: {
@@ -261,8 +274,37 @@ export default {
       return isJPG && isLt2M;
     },
     // 获取注册验证码
-    getregCapatchUrl(){
-        this.regCapatchUrl = `${process.env.VUE_APP_BASEURL}/captcha?type=login&${Date.now()}`
+    getregCapatchUrl() {
+      this.regCapatchUrl = `${
+        process.env.VUE_APP_BASEURL
+      }/captcha?type=sendsms&${Date.now()}`;
+    },
+    // 获取用户验证码
+    getMessageCode() {
+      // 手机号码判断
+      // 正则
+      const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
+      if (!reg.test(this.regForm.phone)) {
+        return this.$message.error("兄弟,手机号码格式不太对喔!");
+      }
+      // 手机号图片验证码:
+      if (this.regForm.regYZM == "" || this.regForm.regYZM.length != 4) {
+        return this.$message.error("验证码错误,老哥,你是机器人吗?");
+      }
+      //
+      axios({
+        url: process.env.VUE_APP_BASEURL + "/sendsms",
+        method: "post",
+        // 携带跨域
+        withCredentials: true,
+        data: {
+          code: this.regForm.regYZM,
+          phone: this.regForm.phone
+        }
+      }).then(res => {
+        //成功回调
+        window.console.log(res);
+      });
     }
   }
 };
