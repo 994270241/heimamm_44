@@ -57,11 +57,11 @@
     <img class="login-src" src="../../assets/login_banner_ele.png" alt />
     <!-- 用户注册对话框 -->
     <el-dialog title="用户注册" :visible.sync="dialogFormVisible">
-      <el-form :model="form">
+      <el-form ref="regForm" :model="regForm" :rules="regRules">
         <!-- 头像 -->
         <el-form-item label="头像" :label-width="formLabelWidth">
           <!-- 头像上传 -->
-          <el-form-item>
+          <el-form-item prop="avatr">
             <el-upload
               name="image"
               class="avatar-uploader"
@@ -76,23 +76,23 @@
           </el-form-item>
         </el-form-item>
         <!-- 昵称-->
-        <el-form-item label="昵称" :label-width="formLabelWidth">
-          <el-input v-model="regForm.name" autocomplete="off"></el-input>
+        <el-form-item label="昵称" :label-width="formLabelWidth" prop="username">
+          <el-input v-model="regForm.username" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 邮箱 -->
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="regForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 手机 -->
-        <el-form-item label="手机" :label-width="formLabelWidth">
+        <el-form-item label="手机" :label-width="formLabelWidth" prop="phone">
           <el-input v-model="regForm.phone" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item label="密码" :label-width="formLabelWidth">
+        <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
           <el-input v-model="regForm.password" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 图形码 -->
-        <el-form-item label="图形码" :label-width="formLabelWidth">
+        <el-form-item label="图形码" :label-width="formLabelWidth" prop="regYZM">
           <el-row>
             <el-col :span="16">
               <el-input v-model="regForm.regYZM" autocomplete="off"></el-input>
@@ -104,7 +104,7 @@
           </el-row>
         </el-form-item>
         <!-- 验证码 -->
-        <el-form-item label="验证码 " :label-width="formLabelWidth">
+        <el-form-item label="验证码 " :label-width="formLabelWidth" prop="rcode">
           <el-row>
             <el-col :span="16">
               <el-input v-model="regForm.rcode" autocomplete="off"></el-input>
@@ -133,6 +133,7 @@ export default {
   name: "login",
   data() {
     // 自定义校验规则的函数
+    // 手机号
     var checkphone = (rule, value, callback) => {
       if (!value) {
         return callback(new Error("手机不能为空"));
@@ -145,6 +146,22 @@ export default {
         } else {
           // 不满足 手机号码的格式
           callback(new Error("手机号码输入错误"));
+        }
+      }
+    };
+    // 邮箱
+    var checkEmail = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("邮箱不能为空"));
+      } else {
+        // 利用判断手机号码格式
+        const reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
+        // 判断是否符合
+        if (reg.test(value) == true) {
+          callback();
+        } else {
+          // 不满足 手机号码的格式
+          callback(new Error("邮箱格式输入错误"));
         }
       }
     };
@@ -166,19 +183,19 @@ export default {
         // 头像:
         avatr: "",
         // 昵称:
-        name: "",
+        username: "",
         // 邮箱:
         email: "",
         // 手机号码:
         phone: "",
         // 密码:
         password: "",
-        // 注册验证码
+        // 图形验证码
         regYZM: "",
         // 短信验证:
         rcode: ""
       },
-      // 验证规则
+      // 表单验证规则
       rules: {
         // 手机号
         phone: [{ required: true, validator: checkphone, trigger: "blur" }],
@@ -211,12 +228,93 @@ export default {
           }
         ]
       },
+      // 注册表单验证规则
+      regRules: {
+        // 用户名:
+        username: [
+          {
+            required: true,
+            message: "用户名不能为空",
+            trigger: "blur"
+          },
+          {
+            min: 6,
+            max: 18,
+            message: "用户名长度为 6 到 18",
+            trigger: "change"
+          }
+        ],
+        // 手机号:
+        phone: [{ required: true, validator: checkphone, trigger: "blur" }],
+        // 邮箱:
+        email: [
+          {
+            required: true,
+            message: "邮箱不能为空",
+            trigger: "blur",
+            validator: checkEmail
+          }
+        ],
+        // 头像:
+        // avatr: [
+        //   {
+        //     required: true,
+        //     message: "头像不能为空",
+        //     trigger: "blur",
+
+        //   },
+        // ],
+
+        // 密码:
+        password: [
+          {
+            required: true,
+            message: "密码不能为空",
+            trigger: "blur"
+          },
+          {
+            min: 6,
+            max: 18,
+            message: "密码长度为 6 到 18",
+            trigger: "change"
+          }
+        ],
+        // 验证码:
+        rcode: [
+          {
+            required: true,
+            message: "验证码不能为空",
+            trigger: "blur"
+          },
+          {
+            min: 4,
+            max: 4,
+            message: "验证码长度为4",
+            trigger: "change"
+          }
+        ],
+        // 图形码:
+        regYZM: [
+          {
+            required: true,
+            message: "图形码不能为空",
+            trigger: "blur"
+          },
+          {
+            min: 4,
+            max: 4,
+            message: "图形码长度为4",
+            trigger: "change"
+          }
+        ]
+      },
+
       // 验证码URL:
       YZMUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login",
       // 是否弹出对话框
       dialogFormVisible: false,
       //  宽度
-      formLabelWidth: "60px",
+      formLabelWidth: "65px",
       //  上传地址
       imageUrl: "",
       //  注册码
