@@ -127,8 +127,10 @@
 </template>
 
 <script>
+// 导入登录接口
+import { login, sendsms, register } from "../../api/login.js";
 // 导入axios
-import axios from "axios";
+// import axios from "axios";
 export default {
   name: "login",
   data() {
@@ -336,16 +338,22 @@ export default {
             // 验证成功
             this.$message.success("恭喜你,成功了");
             // 用户登录请求
-            axios({
-              url: process.env.VUE_APP_BASEURL + "/login",
-              method: "post",
-              // 设置跨域请求可以携带cookie
-              withCredentials: true,
-              data: {
-                phone: this.form.phone,
+            // axios({
+            //   url: process.env.VUE_APP_BASEURL + "/login",
+            //   method: "post",
+            //   // 设置跨域请求可以携带cookie
+            //   withCredentials: true,
+            //   data: {
+            //     phone: this.form.phone,
+            //     password: this.form.password,
+            //     code: this.form.YZM
+            //   }
+            // })
+
+            login({
+               phone: this.form.phone,
                 password: this.form.password,
                 code: this.form.YZM
-              }
             }).then(res => {
               //成功回调
               window.console.log(res);
@@ -412,15 +420,20 @@ export default {
       }, 100);
 
       //获取短信验证码
-      axios({
-        url: process.env.VUE_APP_BASEURL + "/sendsms",
-        method: "post",
-        // 携带跨域
-        withCredentials: true,
-        data: {
-          code: this.regForm.regYZM,
-          phone: this.regForm.phone
-        }
+      // axios({
+      //   url: process.env.VUE_APP_BASEURL + "/sendsms",
+      //   method: "post",
+      //   // 携带跨域
+      //   withCredentials: true,
+      //   data: {
+      //     code: this.regForm.regYZM,
+      //     phone: this.regForm.phone
+      //   }
+      // });
+
+      sendsms({
+        code: this.regForm.regYZM,
+        phone: this.regForm.phone
       }).then(res => {
         //成功回调
         // window.console.log(res);
@@ -433,17 +446,25 @@ export default {
     submitRegForm() {
       this.$refs.regForm.validate(valid => {
         if (valid) {
-          axios({
-            url: process.env.VUE_APP_BASEURL + "/register",
-            method: "post",
-            data: {
-              username: this.regForm.username,
-              phone: this.regForm.phone,
-              email: this.regForm.email,
-              avatar: this.regForm.avatar,
-              password: this.regForm.password,
-              rcode: this.regForm.rcode
-            }
+          // axios({
+          //   url: process.env.VUE_APP_BASEURL + "/register",
+          //   method: "post",
+          //   data: {
+          //     username: this.regForm.username,
+          //     phone: this.regForm.phone,
+          //     email: this.regForm.email,
+          //     avatar: this.regForm.avatar,
+          //     password: this.regForm.password,
+          //     rcode: this.regForm.rcode
+          //   }
+          // })
+          register({
+            username: this.regForm.username,
+            phone: this.regForm.phone,
+            email: this.regForm.email,
+            avatar: this.regForm.avatar,
+            password: this.regForm.password,
+            rcode: this.regForm.rcode
           }).then(res => {
             //成功回调
             window.console.log(res);
