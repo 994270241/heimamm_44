@@ -97,7 +97,7 @@
               <el-input v-model="form.name" autocomplete="off"></el-input>
             </el-col>
             <el-col :span="7" :offset="1">
-              <img src="../../assets/YZM.png" alt class="register-YZM" />
+              <img :src="regCapatchUrl" @click="getregCapatchUrl" alt class="register-YZM" />
             </el-col>
           </el-row>
         </el-form-item>
@@ -155,7 +155,9 @@ export default {
         // 验证码
         YZM: "",
         // 勾选
-        checked: false
+        checked: false,
+        
+       
       },
       // 验证规则
       rules: {
@@ -197,7 +199,9 @@ export default {
       //  宽度
       formLabelWidth: "60px",
       //  上传地址
-      imageUrl: ""
+      imageUrl: "",
+      //  注册码
+      regCapatchUrl : process.env.VUE_APP_BASEURL + "/captcha?type=login"
     };
   },
   methods: {
@@ -255,6 +259,10 @@ export default {
         this.$message.error("上传头像图片大小不能超过 2MB!");
       }
       return isJPG && isLt2M;
+    },
+    // 获取注册验证码
+    getregCapatchUrl(){
+        this.regCapatchUrl = `${process.env.VUE_APP_BASEURL}/captcha?type=login&${Date.now()}`
     }
   }
 };
