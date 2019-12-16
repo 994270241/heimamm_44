@@ -63,8 +63,9 @@
           <!-- 头像上传 -->
           <el-form-item>
             <el-upload
+              name="image"
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              :action="uploads"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
@@ -162,6 +163,8 @@ export default {
       },
       // 注册表单数据:
       regForm: {
+        // 头像:
+        avatr: "",
         // 昵称:
         name: "",
         // 邮箱:
@@ -219,7 +222,9 @@ export default {
       //  注册码
       regCapatchUrl: process.env.VUE_APP_BASEURL + "/captcha?type=sendsms",
       // 倒计时
-      time: 0
+      time: 0,
+      // 图片上传地址
+      uploads: `${process.env.VUE_APP_BASEURL}/uploads`
     };
   },
   methods: {
@@ -264,6 +269,9 @@ export default {
     },
     // 用户头像上传
     handleAvatarSuccess(res, file) {
+      // 保存头像地址:
+      this.regForm.avatr = res.data.file_path;
+      // 生成本地的临时地址
       this.imageUrl = URL.createObjectURL(file.raw);
     },
     beforeAvatarUpload(file) {
@@ -318,8 +326,8 @@ export default {
       }).then(res => {
         //成功回调
         // window.console.log(res);
-        if(res.data.code == 200) {
-          this.$message.success(`你的短信验证码${res.data.data.captcha}`)
+        if (res.data.code == 200) {
+          this.$message.success(`你的短信验证码${res.data.data.captcha}`);
         }
       });
     }
