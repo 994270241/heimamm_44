@@ -49,12 +49,76 @@
         <!-- 按钮 -->
         <el-form-item>
           <el-button type="primary" class="login-btn" @click="submitForm">登录</el-button>
-          <el-button class="register-btn">注册</el-button>
+          <el-button class="register-btn" @click="dialogFormVisible = true">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
     <!-- 右边图片 -->
     <img class="login-src" src="../../assets/login_banner_ele.png" alt />
+    <!-- 用户注册对话框 -->
+    <el-dialog title="用户注册" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <!-- 头像 -->
+        <el-form-item  label="头像" :label-width="formLabelWidth">
+          <!-- 头像上传 -->
+          <el-form-item>
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </el-form-item>
+        </el-form-item>
+        <!-- 昵称-->
+        <el-form-item label="昵称" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <!-- 邮箱 -->
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <!-- 手机 -->
+        <el-form-item label="手机" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <!-- 密码 -->
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <!-- 图形码 -->
+        <el-form-item label="图形码" :label-width="formLabelWidth">
+          <el-row>
+            <el-col :span="16">
+              <el-input v-model="form.name" autocomplete="off"></el-input>
+            </el-col>
+            <el-col :span="7" :offset="1">
+              <img src="../../assets/YZM.png" alt class="register-YZM" />
+            </el-col>
+          </el-row>
+        </el-form-item>
+        <!-- 验证码 -->
+        <el-form-item label="验证码 " :label-width="formLabelWidth">
+         
+          <el-row >
+            <el-col :span="16">
+               <el-input v-model="form.name" autocomplete="off"></el-input>
+            </el-col>
+            <el-col :span="7" :offset="1">
+              <el-button>获取用户验证码</el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -127,7 +191,13 @@ export default {
         ]
       },
       // 验证码URL:
-      YZMUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login"
+      YZMUrl: process.env.VUE_APP_BASEURL + "/captcha?type=login",
+      // 是否弹出对话框
+      dialogFormVisible: false,
+      //  宽度
+      formLabelWidth: "60px",
+      //  上传地址
+      imageUrl: ""
     };
   },
   methods: {
@@ -145,11 +215,11 @@ export default {
               url: process.env.VUE_APP_BASEURL + "/login",
               method: "post",
               // 设置跨域请求可以携带cookie
-              withCredentials : true,
-              data : {
-                  phone : this.form.phone,
-                  password : this.form.password,
-                  code: this.form.YZM,
+              withCredentials: true,
+              data: {
+                phone: this.form.phone,
+                password: this.form.password,
+                code: this.form.YZM
               }
             }).then(res => {
               //成功回调
@@ -169,6 +239,22 @@ export default {
       // 时间戳
       this.YZMUrl =
         process.env.VUE_APP_BASEURL + "/captcha?type=login&" + Date.now();
+    },
+    // 用户头像上传
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
     }
   }
 };
@@ -242,6 +328,59 @@ export default {
           align-items: center;
         }
       }
+    }
+  }
+  // 用户注册
+  .el-dialog {
+    width: 603px;
+    height: 786px;
+    background: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(78, 78, 78, 1);
+    .el-dialog__header {
+      text-align: center;
+      width: 600px;
+      height: 53px;
+      // line-height: 53px;
+      background: linear-gradient(to right, #01c4fa, #1294fa);
+      .el-dialog__title {
+        font-size: 18px;
+        padding-bottom: 20px;
+        color: white;
+      }
+    }
+    // 头像上传
+    .avatar-uploader {
+      text-align: center;
+    }
+    .avatar-uploader .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 28px;
+      color: #8c939d;
+      width: 178px;
+      height: 178px;
+      line-height: 178px;
+      text-align: center;
+    }
+    .avatar {
+      width: 178px;
+      height: 178px;
+      display: block;
+    }
+    .dialog-footer {
+      text-align: center;
+    }
+    .register-YZM {
+      width: 100%;
+      height: 42px;
     }
   }
 }
