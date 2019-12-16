@@ -109,7 +109,10 @@
               <el-input v-model="regForm.rcode" autocomplete="off"></el-input>
             </el-col>
             <el-col :span="7" :offset="1">
-              <el-button @click="getMessageCode">获取用户验证码</el-button>
+              <el-button
+                @click="getMessageCode"
+                :disabled="time != 0"
+              >{{ time == 0? "获取用户验证码" : `还有${time}s继续获取`}}</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -214,7 +217,9 @@ export default {
       //  上传地址
       imageUrl: "",
       //  注册码
-      regCapatchUrl: process.env.VUE_APP_BASEURL + "/captcha?type=sendsms"
+      regCapatchUrl: process.env.VUE_APP_BASEURL + "/captcha?type=sendsms",
+      // 倒计时
+      time: 0
     };
   },
   methods: {
@@ -291,7 +296,16 @@ export default {
       if (this.regForm.regYZM == "" || this.regForm.regYZM.length != 4) {
         return this.$message.error("验证码错误,老哥,你是机器人吗?");
       }
-      //
+      this.time = 60;
+
+      const id = setInterval(() => {
+        this.time--;
+        if (this.time == 0) {
+          clearInterval(id);
+        }
+      }, 100);
+
+      //获取短信验证码
       axios({
         url: process.env.VUE_APP_BASEURL + "/sendsms",
         method: "post",
@@ -303,7 +317,10 @@ export default {
         }
       }).then(res => {
         //成功回调
-        window.console.log(res);
+        // window.console.log(res);
+        if(res.data.code == 200) {
+          this.$message.success(`你的短信验证码${res.data.data.captcha}`)
+        }
       });
     }
   }
