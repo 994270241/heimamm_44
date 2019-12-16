@@ -61,7 +61,7 @@
         <!-- 头像 -->
         <el-form-item label="头像" :label-width="formLabelWidth">
           <!-- 头像上传 -->
-          <el-form-item prop="avatr">
+          <el-form-item prop="avatar">
             <el-upload
               name="image"
               class="avatar-uploader"
@@ -120,7 +120,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitRegForm">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -181,7 +181,7 @@ export default {
       // 注册表单数据:
       regForm: {
         // 头像:
-        avatr: "",
+        avatar: "",
         // 昵称:
         username: "",
         // 邮箱:
@@ -238,9 +238,9 @@ export default {
             trigger: "blur"
           },
           {
-            min: 6,
+            min: 2,
             max: 18,
-            message: "用户名长度为 6 到 18",
+            message: "用户名长度为 2 到 18",
             trigger: "change"
           }
         ],
@@ -368,7 +368,7 @@ export default {
     // 用户头像上传
     handleAvatarSuccess(res, file) {
       // 保存头像地址:
-      this.regForm.avatr = res.data.file_path;
+      this.regForm.avatar = res.data.file_path;
       // 生成本地的临时地址
       this.imageUrl = URL.createObjectURL(file.raw);
     },
@@ -426,6 +426,37 @@ export default {
         // window.console.log(res);
         if (res.data.code == 200) {
           this.$message.success(`你的短信验证码${res.data.data.captcha}`);
+        }
+      });
+    },
+    // 注册请求:
+    submitRegForm() {
+      this.$refs.regForm.validate(valid => {
+        if (valid) {
+          axios({
+            url: process.env.VUE_APP_BASEURL + "/register",
+            method: "post",
+            data: {
+              username: this.regForm.username,
+              phone: this.regForm.phone,
+              email: this.regForm.email,
+              avatar: this.regForm.avatar,
+              password: this.regForm.password,
+              rcode: this.regForm.rcode
+            }
+          }).then(res => {
+            //成功回调
+            window.console.log(res);
+            if (res.data.code == 200) {
+              this.$message.success("恭喜你,注册成功,么么哒");
+              this.dialogFormVisible = false;
+            } else {
+              this.$message.error("注册失败,请重新注册");
+            }
+          });
+        } else {
+          this.$message.error("很遗憾,内容没有写对");
+          return false;
         }
       });
     }
