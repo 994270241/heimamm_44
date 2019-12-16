@@ -4,7 +4,7 @@
     <el-header class="my-header">
       <!-- 左边 -->
       <div class="left">
-        <i class="el-icon-s-fold"></i>
+        <i class="el-icon-s-fold" @click="isCollapse = !isCollapse"></i>
         <img src="../../assets/矢量智能对象 拷贝 9.png" alt />
         <span>黑马面面</span>
       </div>
@@ -16,7 +16,37 @@
       </div>
     </el-header>
     <el-container>
-      <el-aside width="200px" class="my-aside">Aside</el-aside>
+      <el-aside width="auto" class="my-aside">
+        <!-- 导航菜单 -->
+         <!-- <input type="button" value="切换" @click="isCollapse = !isCollapse"> -->
+        <el-menu  default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" >
+          <!-- 数据概览 -->
+          <el-menu-item index="1">
+            <i class="el-icon-pie-chart"  ></i>
+            <span slot="title">数据概览</span>
+          </el-menu-item>
+          <!-- 用户列表 -->
+          <el-menu-item index="2">
+            <i class="el-icon-user"></i>
+            <span slot="title">用户列表</span>
+          </el-menu-item>
+          <!-- 题库列表 -->
+          <el-menu-item index="3">
+            <i class="el-icon-edit-outline"></i>
+            <span slot="title">题库列表</span>
+          </el-menu-item>
+          <!-- 企业列表 -->
+          <el-menu-item index="4">
+            <i class="el-icon-office-building"></i>
+            <span slot="title">企业列表</span>
+          </el-menu-item>
+          <!-- 学科列表 -->
+          <el-menu-item index="2">
+            <i class="el-icon-notebook-2"></i>
+            <span slot="title">学科列表</span>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
       <el-container>
         <el-main class="my-main">Main</el-main>
       </el-container>
@@ -25,14 +55,22 @@
 </template>
 
 <script>
-export default {};
+export default {
+  name: "index",
+  data() {
+    return {
+      // 是否折叠
+      isCollapse:false
+    };
+  }
+};
 </script>
 
 <style lang="less">
 .index-container {
   height: 100%;
   .my-header {
-    background-color: skyblue;
+    // background-color: skyblue;
     display: flex;
     // align-items: center;
     justify-content: space-between;
@@ -72,7 +110,12 @@ export default {};
     }
   }
   .my-aside {
-    background-color: purple;
+    // background-color: purple;
+    // 导航样式
+    .el-menu-vertical-demo:not(.el-menu--collapse) {
+      width: 200px;
+      min-height: 400px;
+    }
   }
   .my-main {
     background-color: pink;
