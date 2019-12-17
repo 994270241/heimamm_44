@@ -10,8 +10,8 @@
       </div>
       <!-- 右边 -->
       <div class="right">
-        <img class="user-icon" src="../../assets/nx.jpg" alt />
-        <span class="username">友利奈绪,你好</span>
+        <img class="user-icon" :src="avatar" alt />
+        <span class="username">{{userinfo.username}},你好</span>
         <el-button class="tuichu" size="small">退出</el-button>
       </div>
     </el-header>
@@ -58,14 +58,21 @@
 </template>
 
 <script>
-//
-import {getToken} from "../../utils/token.js"
+//获取token
+import {getToken,removeToken} from "../../utils/token.js"
+// 获取userinfo
+import {userinfo} from "../../api/user.js"
 export default {
   name: "index",
   data() {
     return {
       // 是否折叠
-      isCollapse:false
+      isCollapse:false,
+      // 用户信息
+      userinfo : '',
+      // 用户头像
+      avatar : '',
+
     };
   },
   beforeCreate() {
@@ -76,6 +83,22 @@ export default {
       this.$router.push("/login")
     }
     
+  },
+  created() {
+    userinfo().then(res => {
+      window.console.log("用户信息:",res);
+      if(res.data.code === 200) {
+        this.userinfo = res.data.data
+        this.avatar = `${process.env.VUE_APP_BASEURL}/${res.data.data.avatar}`
+      }else if (res.data.code === 206){
+        // 提示用户
+        this.$message.warning('主人,不准偷偷摸摸来房间哦')
+        // 干掉token
+        removeToken()
+        // 返回登录页
+        this.$router.push("/login")
+      }
+    })
   },
 };
 </script>
