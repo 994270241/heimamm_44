@@ -19,7 +19,7 @@
       <el-aside width="auto" class="my-aside">
         <!-- 导航菜单 -->
          <!-- <input type="button" value="切换" @click="isCollapse = !isCollapse"> -->
-        <el-menu  default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" >
+        <el-menu  default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" router>
           <!-- 数据概览 -->
           <el-menu-item index="1">
             <i class="el-icon-pie-chart"  ></i>
@@ -41,14 +41,17 @@
             <span slot="title">企业列表</span>
           </el-menu-item>
           <!-- 学科列表 -->
-          <el-menu-item index="2">
+          <el-menu-item index="/index/subject">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">学科列表</span>
           </el-menu-item>
         </el-menu>
       </el-aside>
       <el-container>
-        <el-main class="my-main">Main</el-main>
+        <el-main class="my-main">
+            <!-- 嵌套路由出口 -->
+            <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
   </el-container>
@@ -118,7 +121,7 @@ export default {
     }
   }
   .my-main {
-    background-color: pink;
+    // background-color: pink;
   }
 }
 </style>
