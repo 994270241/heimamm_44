@@ -131,6 +131,10 @@
 import { login, sendsms, register } from "../../api/login.js";
 // 导入axios
 // import axios from "axios";
+
+// 导入并使用 token函数
+import {setToken} from "../../utils/token.js"
+
 export default {
   name: "login",
   data() {
@@ -362,7 +366,8 @@ export default {
               } else if (res.data.code === 200) {
                 this.$message.success("主人!欢迎回来(づ￣ 3￣)づ");
                 // 这种不建议用 key可能会写错
-                localStorage.setItem("token", res.data.data.token);
+                // localStorage.setItem("token", res.data.data.token);
+                setToken(res.data.data.token)
                 this.$router.push("/index");
               }
             });
