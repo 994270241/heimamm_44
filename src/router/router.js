@@ -21,9 +21,9 @@ import enterprise from "../views/index/enterprise/enterprise.vue"
 
 
 // 导入token工具函数
-import { getToken, } from "../utils/token.js"
+import { getToken, removeToken } from "../utils/token.js"
 // 导入用户信息接口
-// import {userinfo} from "../api/user.js"
+import {userinfo} from "../api/user.js"
 // element-ui的 Message
 import { Message } from 'element-ui'
 // Use一下 注册
@@ -70,7 +70,7 @@ const router = new VueRouter({
 const whitePaths = ["/login"]
 
 // 路由守卫
-router.afterEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
     // 除了login 页面 都需要做登录判断
     if (whitePaths.includes(to.path.toLocaleLowerCase()) === false) {
         // 必须要登录才可以访问
@@ -79,7 +79,24 @@ router.afterEach((to, from, next) => {
             // window.alert('先登录')
             Message.error('主人,请先登录在访问')
             // 去登录页
-            next('login')
+            next("/login")
+        } else {
+            // 如果有token 继续走
+            userinfo().then(res => {
+                window.console.log("用户信息:", res);
+                if (res.data.code === 200) {
+                    // this.userinfo = res.data.data
+                    // this.avatar = `${process.env.VUE_APP_BASEURL}/${res.data.data.avatar}`
+                    next();
+                } else if (res.data.code === 206) {
+                    // 提示用户
+                    Message.warning('主人,不准偷偷摸摸来房间哦')
+                    // 干掉token
+                    removeToken()
+                    // 返回登录页
+                    next("/login")
+                }
+            })
         }
     } else {
         // 登录页,这届放过去

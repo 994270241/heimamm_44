@@ -59,9 +59,9 @@
 
 <script>
 //获取token
-import {removeToken} from "../../utils/token.js"
+// import {removeToken} from "../../utils/token.js"
 // 获取userinfo
-import {userinfo} from "../../api/user.js"
+// import {userinfo} from "../../api/user.js"
 export default {
   name: "index",
   data() {
@@ -85,20 +85,20 @@ export default {
     
   // },
   created() {
-    userinfo().then(res => {
-      window.console.log("用户信息:",res);
-      if(res.data.code === 200) {
-        this.userinfo = res.data.data
-        this.avatar = `${process.env.VUE_APP_BASEURL}/${res.data.data.avatar}`
-      }else if (res.data.code === 206){
-        // 提示用户
-        this.$message.warning('主人,不准偷偷摸摸来房间哦')
-        // 干掉token
-        removeToken()
-        // 返回登录页
-        this.$router.push("/login")
-      }
-    })
+    // userinfo().then(res => {
+    //   window.console.log("用户信息:",res);
+    //   if(res.data.code === 200) {
+    //     this.userinfo = res.data.data
+    //     this.avatar = `${process.env.VUE_APP_BASEURL}/${res.data.data.avatar}`
+    //   }else if (res.data.code === 206){
+    //     // 提示用户
+    //     this.$message.warning('主人,不准偷偷摸摸来房间哦')
+    //     // 干掉token
+    //     removeToken()
+    //     // 返回登录页
+    //     this.$router.push("/login")
+    //   }
+    // })
   },
 };
 </script>
