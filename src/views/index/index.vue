@@ -58,6 +58,8 @@
 </template>
 
 <script>
+//
+import {getToken} from "../../utils/token.js"
 export default {
   name: "index",
   data() {
@@ -65,7 +67,16 @@ export default {
       // 是否折叠
       isCollapse:false
     };
-  }
+  },
+  beforeCreate() {
+    // 不存在
+    if(!getToken()) {
+      // 提示用户
+      this.$message.error('主人,没经过奈绪酱同意!不准偷偷登录哦!╥﹏╥...')
+      this.$router.push("/login")
+    }
+    
+  },
 };
 </script>
 

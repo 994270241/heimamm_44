@@ -10,7 +10,8 @@ export const setToken = (token) => {
 // 获取token
 export const getToken = () => {
     // 取值只要 key 即可
-    return localStorage.getToken(KEY)
+    // localStorage.getItem
+    return localStorage.getItem(KEY)
 }
 
 // 移除token
