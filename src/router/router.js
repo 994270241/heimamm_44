@@ -14,11 +14,18 @@ import subject from "../views/index/subject/subject.vue"
 import user from "../views/index/user/user.vue"
 // 数据组件
 import chart from "../views/index/chart/chart.vue"
-// 数据组件
+// 题库组件
 import question from "../views/index/question/question.vue"
-// 数据组件
+// 企业组件
 import enterprise from "../views/index/enterprise/enterprise.vue"
 
+
+// 导入token工具函数
+import { getToken, } from "../utils/token.js"
+// 导入用户信息接口
+// import {userinfo} from "../api/user.js"
+// element-ui的 Message
+// import { Message } from 'element-ui'
 // Use一下 注册
 Vue.use(VueRouter)
 // 规则
@@ -57,6 +64,26 @@ const routes = [
 // 创建
 const router = new VueRouter({
     routes// routes:routes
+})
+
+// 创建路由白名单 :
+// const whitePaths = ["/login"]
+
+// 路由守卫
+router.afterEach((to, from, next) => {
+    // 除了login 页面 都需要做登录判断
+    if (to.path != "/login") {
+        // 必须要登录才可以访问
+        if (!getToken()) {
+            // 提示用户
+            window.alert('先登录')
+            // 取登录页
+            next('login')
+        }
+    } else {
+        // 登录页,这届放过去
+        next();
+    }
 })
 // 暴露出去
 export default router
