@@ -10,19 +10,24 @@
       </div>
       <!-- 右边 -->
       <div class="right">
-        <img class="user-icon" :src="avatar" alt />
-        <span class="username">{{userinfo.username}},你好</span>
-        <el-button class="tuichu" size="small">退出</el-button>
+        <img class="user-icon" :src="$store.state.userInfo.avatar" alt />
+        <span class="username">{{$store.state.userInfo.username}},你好</span>
+        <el-button class="tuichu" size="small" @click="layout">退出</el-button>
       </div>
     </el-header>
     <el-container>
       <el-aside width="auto" class="my-aside">
         <!-- 导航菜单 -->
-         <!-- <input type="button" value="切换" @click="isCollapse = !isCollapse"> -->
-        <el-menu  :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse" router>
+        <!-- <input type="button" value="切换" @click="isCollapse = !isCollapse"> -->
+        <el-menu
+          :default-active="$route.path"
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          router
+        >
           <!-- 数据概览 -->
           <el-menu-item index="/index/chart">
-            <i class="el-icon-pie-chart"  ></i>
+            <i class="el-icon-pie-chart"></i>
             <span slot="title">数据概览</span>
           </el-menu-item>
           <!-- 用户列表 -->
@@ -49,8 +54,8 @@
       </el-aside>
       <el-container>
         <el-main class="my-main">
-            <!-- 嵌套路由出口 -->
-            <router-view></router-view>
+          <!-- 嵌套路由出口 -->
+          <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -59,20 +64,20 @@
 
 <script>
 //获取token
-// import {removeToken} from "../../utils/token.js"
+// import { removeToken } from "../../utils/token.js";
 // 获取userinfo
-// import {userinfo} from "../../api/user.js"
+import { logout } from "../../api/user.js";
+import { removeToken } from '../../utils/token';
 export default {
   name: "index",
   data() {
     return {
       // 是否折叠
-      isCollapse:false,
+      isCollapse: false,
       // 用户信息
-      userinfo : '',
+      userinfo: "",
       // 用户头像
-      avatar : '',
-
+      avatar: ""
     };
   },
   // beforeCreate() {
@@ -82,7 +87,7 @@ export default {
   //     this.$message.error('主人,没经过奈绪酱同意!不准偷偷登录哦!╥﹏╥...')
   //     this.$router.push("/login")
   //   }
-    
+
   // },
   created() {
     // userinfo().then(res => {
@@ -100,6 +105,44 @@ export default {
     //   }
     // })
   },
+
+  methods: {
+    // 退出按钮
+    layout() {
+      this.$confirm("主人,你确定要离开小奈绪吗?", "温馨提示", {
+        confirmButtonText: "狠心离开",
+        cancelButtonText: "多陪一会",
+        type: "warning"
+      })
+        .then(() => {
+          logout().then(res => {
+            window.console.log("退出接口",res);
+            if (res.data.code === 200) {       
+              this.$message.success('退出成功!欢迎主人下次再见')       
+              // 清除token
+              removeToken()
+              // 用户信息
+              this.$store.state.userInfo = {}
+              // 去登录页
+              this.$router.push('/login')
+            }
+          });
+          // this.$message({
+          //   type: "success",
+          //   message: "退出成功!欢迎主人下次再见"
+          //   // 清空token
+
+          //   // this.$store.state.userInfo = {}
+          // });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "感谢主人么么哒,(●ˇ∀ˇ●)"
+          });
+        });
+    }
+  }
 };
 </script>
 

@@ -81,7 +81,7 @@
         </el-form-item>
         <!-- 邮箱 -->
         <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-          <el-input v-model="regForm.email" autocomplete="off"></el-input>
+          <el-input v-model="regForm.email" autocomplete="off"  ></el-input>
         </el-form-item>
         <!-- 手机 -->
         <el-form-item label="手机" :label-width="formLabelWidth" prop="phone">
@@ -89,7 +89,7 @@
         </el-form-item>
         <!-- 密码 -->
         <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
-          <el-input v-model="regForm.password" autocomplete="off"></el-input>
+          <el-input v-model="regForm.password" autocomplete="off" show-password></el-input>
         </el-form-item>
         <!-- 图形码 -->
         <el-form-item label="图形码" :label-width="formLabelWidth" prop="regYZM">

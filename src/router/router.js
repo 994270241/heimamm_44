@@ -26,6 +26,8 @@ import { getToken, removeToken } from "../utils/token.js"
 import {userinfo} from "../api/user.js"
 // element-ui的 Message
 import { Message } from 'element-ui'
+// 导入仓库
+import store from "../store/store.js"
 // Use一下 注册
 Vue.use(VueRouter)
 // 规则
@@ -87,6 +89,10 @@ router.beforeEach((to, from, next) => {
                 if (res.data.code === 200) {
                     // this.userinfo = res.data.data
                     // this.avatar = `${process.env.VUE_APP_BASEURL}/${res.data.data.avatar}`
+
+                    store.state.userInfo = res.data.data
+                    store.state.userInfo.avatar = `${process.env.VUE_APP_BASEURL}/${store.state.userInfo.avatar}`
+
                     next();
                 } else if (res.data.code === 206) {
                     // 提示用户

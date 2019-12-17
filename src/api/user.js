@@ -22,3 +22,14 @@ export function userinfo() {
         }
     })
 }
+
+// 暴露接口 退出登录
+export function logout() {
+    return instance({
+        url: '/logout',
+        method: 'get',
+        headers: {
+            token: getToken()
+        }
+    })
+}
