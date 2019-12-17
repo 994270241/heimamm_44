@@ -19,24 +19,24 @@
       <el-aside width="auto" class="my-aside">
         <!-- 导航菜单 -->
          <!-- <input type="button" value="切换" @click="isCollapse = !isCollapse"> -->
-        <el-menu  default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" router>
+        <el-menu  :default-active="$route.path" class="el-menu-vertical-demo" :collapse="isCollapse" router>
           <!-- 数据概览 -->
-          <el-menu-item index="1">
+          <el-menu-item index="/index/chart">
             <i class="el-icon-pie-chart"  ></i>
             <span slot="title">数据概览</span>
           </el-menu-item>
           <!-- 用户列表 -->
-          <el-menu-item index="2">
+          <el-menu-item index="/index/user">
             <i class="el-icon-user"></i>
             <span slot="title">用户列表</span>
           </el-menu-item>
           <!-- 题库列表 -->
-          <el-menu-item index="3">
+          <el-menu-item index="/index/question">
             <i class="el-icon-edit-outline"></i>
             <span slot="title">题库列表</span>
           </el-menu-item>
           <!-- 企业列表 -->
-          <el-menu-item index="4">
+          <el-menu-item index="/index/enterprise">
             <i class="el-icon-office-building"></i>
             <span slot="title">企业列表</span>
           </el-menu-item>
