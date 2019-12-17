@@ -59,7 +59,7 @@
 
 <script>
 //获取token
-import {getToken,removeToken} from "../../utils/token.js"
+import {removeToken} from "../../utils/token.js"
 // 获取userinfo
 import {userinfo} from "../../api/user.js"
 export default {
@@ -75,15 +75,15 @@ export default {
 
     };
   },
-  beforeCreate() {
-    // 不存在
-    if(!getToken()) {
-      // 提示用户
-      this.$message.error('主人,没经过奈绪酱同意!不准偷偷登录哦!╥﹏╥...')
-      this.$router.push("/login")
-    }
+  // beforeCreate() {
+  //   // 不存在
+  //   if(!getToken()) {
+  //     // 提示用户
+  //     this.$message.error('主人,没经过奈绪酱同意!不准偷偷登录哦!╥﹏╥...')
+  //     this.$router.push("/login")
+  //   }
     
-  },
+  // },
   created() {
     userinfo().then(res => {
       window.console.log("用户信息:",res);
