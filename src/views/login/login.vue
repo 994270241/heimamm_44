@@ -351,12 +351,20 @@ export default {
             // })
 
             login({
-               phone: this.form.phone,
-                password: this.form.password,
-                code: this.form.YZM
+              phone: this.form.phone,
+              password: this.form.password,
+              code: this.form.YZM
             }).then(res => {
               //成功回调
               window.console.log(res);
+              if (res.data.code === 202) {
+                this.$message.error(res.data.message);
+              } else if (res.data.code === 200) {
+                this.$message.success("主人!欢迎回来(づ￣ 3￣)づ");
+                // 这种不建议用 key可能会写错
+                localStorage.setItem("token", res.data.data.token);
+                this.$router.push("/index");
+              }
             });
           } else {
             // 验证失败

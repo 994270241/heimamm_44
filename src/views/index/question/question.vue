@@ -1,5 +1,5 @@
 <template>
-  <div>question</div>
+  <img src="../../../assets/yl2.jpg" alt="">
 </template>
 
 <script>

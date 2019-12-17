@@ -1,5 +1,5 @@
 <template>
-  <div>chart</div>
+  <img src="../../../assets/yl1.jpg" alt="">
 </template>
 
 <script>
