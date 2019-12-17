@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
+import store from "./store/store.js"
 
 // 导入初始化代码
 import "./style/base.css"
@@ -18,5 +19,6 @@ Vue.config.productionTip = false
 new Vue({
   render: h => h(App),
   // 挂载到Vue示例上 router
-  router// router:router
+  router,// router:router
+  store
 }).$mount('#app')
