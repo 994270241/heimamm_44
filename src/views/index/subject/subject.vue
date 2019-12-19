@@ -116,9 +116,9 @@ export default {
       AdddialogFormVisible: false,
       // 页数据
       // 页码:
-      page : 1,
+      page: 1,
       // 每一页多少条
-      limit : 2,
+      limit: 2
     };
   },
   methods: {
@@ -128,16 +128,20 @@ export default {
     // 打开新增对话框
     openAdd() {
       this.AdddialogFormVisible = true;
+    },
+    // 获取学科列表
+    getSubjectList() {
+      subjectList({
+        page: this.page,
+        limit: this.limit,
+        ...this.formInline
+      }).then(res => {
+        window.console.log("学科列表:", res);
+      });
     }
   },
   created() {
-    subjectList({
-        page:this.page,
-        limit:this.limit,
-        ...this.formInline,
-    }).then(res => {
-      window.console.log("学科列表:",res);
-    });
+      this.getSubjectList()
   }
 };
 </script>
