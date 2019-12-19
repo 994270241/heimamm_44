@@ -1,15 +1,149 @@
 <template>
-<div>123</div>
+  <div class="subject-content">
+    <!-- 上部卡片 -->
+    <el-card class="top-card">
+      <!-- 行内表单 -->
+      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="学科编号">
+          <el-input v-model="formInline.rid" class="subject-bh"></el-input>
+        </el-form-item>
+        <el-form-item label="学科名称">
+          <el-input v-model="formInline.user" class="subject-name"></el-input>
+        </el-form-item>
+        <el-form-item label="创建者">
+          <el-input v-model="formInline.username" class="subject-bh"></el-input>
+        </el-form-item>
+
+        <el-form-item label="状态">
+          <el-select v-model="formInline.status" placeholder="请选择状态">
+            <el-option label="启用" value="shanghai"></el-option>
+            <el-option label="禁用" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary">搜索</el-button>
+          <el-button>清除</el-button>
+          <el-button type="primary" icon="el-icon-plus">新增学科</el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
+    <!-- 身体卡片 -->
+    <el-card class="main-card">
+      <!-- 基础表格 -->
+      <el-table :data="tableData" style="width: 100%">
+        <el-table-column type="index"  label="序号"></el-table-column>
+        <el-table-column prop="name" label="学科编号"></el-table-column>
+        <el-table-column prop="name" label="学科名称"></el-table-column>
+        <el-table-column prop="address" label="简称"></el-table-column>
+        <el-table-column prop="address" label="创建者"></el-table-column>
+        <el-table-column prop="address" label="创建日期"></el-table-column>
+        <el-table-column prop="address" label="状态">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status === 1">启用</span>
+            <span class="red" v-else>禁用</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="address" label="操作">
+          <template slot-scope="scope">
+            <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button type="text" @click="handleEdit(scope.$index, scope.row)">禁用</el-button>
+            <el-button type="text"  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页器 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="currentPage4"
+        :page-sizes="[100, 200, 300, 400]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400"
+      ></el-pagination>
+    </el-card>
+  </div>
 </template>
 
 <script>
 export default {
   name: "subject",
   data() {
-    return {};
+    return {
+      formInline: {
+        // 学科编号
+        rid: "",
+        // 学科名称
+        name: "",
+        //创建者
+        username: "",
+        // 状态
+        status: ""
+      },
+
+      tableData: [
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1517 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1519 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1516 弄"
+        }
+      ]
+    };
+  },
+  methods: {
+    onSubmit() {
+      window.console.log("submit!");
+    }
   }
 };
 </script>
 
 <style lang="less">
+.subject-content {
+  width: 100%;
+  .top-card {
+    // width: 1191px;
+    height: 103px;
+    border-radius: 4px;
+    .subject-bh {
+      width: 100px;
+      height: 39px;
+    }
+    .subject-name {
+      width: 149px;
+      height: 39px;
+    }
+  }
+  .main-card {
+    // height: 283px;
+    height: 100%;
+    margin-top: 20px;
+    border-radius: 4px;
+    
+    // 高亮的span
+    span.red{
+        color: #ff4b4b;
+    }
+
+    .el-pagination {
+      text-align: center;
+      margin-top: 30px;
+    }
+  }
+}
 </style>
