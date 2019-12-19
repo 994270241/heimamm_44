@@ -23,7 +23,7 @@
         <el-form-item>
           <el-button type="primary">搜索</el-button>
           <el-button>清除</el-button>
-          <el-button type="primary" icon="el-icon-plus">新增学科</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="openAdd">新增学科</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -31,7 +31,7 @@
     <el-card class="main-card">
       <!-- 基础表格 -->
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="index"  label="序号"></el-table-column>
+        <el-table-column type="index" label="序号"></el-table-column>
         <el-table-column prop="name" label="学科编号"></el-table-column>
         <el-table-column prop="name" label="学科名称"></el-table-column>
         <el-table-column prop="address" label="简称"></el-table-column>
@@ -47,7 +47,7 @@
           <template slot-scope="scope">
             <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
             <el-button type="text" @click="handleEdit(scope.$index, scope.row)">禁用</el-button>
-            <el-button type="text"  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,12 +62,19 @@
         :total="400"
       ></el-pagination>
     </el-card>
+    <!-- 新增框 -->
+    <addDialog></addDialog>
   </div>
 </template>
 
 <script>
+import addDialog from "./components/addDialog.vue"
 export default {
   name: "subject",
+  // 注册组件:
+  components : {
+      addDialog,
+  },
   data() {
     return {
       formInline: {
@@ -102,12 +109,22 @@ export default {
           name: "王小虎",
           address: "上海市普陀区金沙江路 1516 弄"
         }
-      ]
+      ],
+
+     
+
+      // 新增对话框是否弹出:
+      AdddialogFormVisible: false,
+    
     };
   },
   methods: {
     onSubmit() {
       window.console.log("submit!");
+    },
+    // 打开新增对话框
+    openAdd() {
+      this.AdddialogFormVisible = true;
     }
   }
 };
@@ -134,10 +151,10 @@ export default {
     height: 100%;
     margin-top: 20px;
     border-radius: 4px;
-    
+
     // 高亮的span
-    span.red{
-        color: #ff4b4b;
+    span.red {
+      color: #ff4b4b;
     }
 
     .el-pagination {
@@ -145,5 +162,6 @@ export default {
       margin-top: 30px;
     }
   }
+  
 }
 </style>
