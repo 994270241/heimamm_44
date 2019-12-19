@@ -21,7 +21,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
+          <el-button type="primary" @click="getSubjectList">搜索</el-button>
           <el-button>清除</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="openAdd">新增学科</el-button>
         </el-form-item>
@@ -46,7 +46,7 @@
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button type="text" @click="handleEdit(scope.$index, scope.row)">禁用</el-button>
+            <el-button type="text" @click="changeStatus(scope.row)">{{scope.row.status === 1 ? "禁用" : "启用"}}</el-button>
             <el-button type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -69,7 +69,7 @@
 
 <script>
 import addDialog from "./components/addDialog.vue";
-import { subjectList } from "../../../api/subject.js";
+import { subjectList,subjectStatus } from "../../../api/subject.js";
 export default {
   name: "subject",
   // 注册组件:
@@ -91,26 +91,7 @@ export default {
       },
       // 表格数据
       tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄"
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄"
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄"
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄"
-        }
+       
       ],
       // 新增对话框是否弹出:
       AdddialogFormVisible: false,
@@ -118,12 +99,22 @@ export default {
       // 页码:
       page: 1,
       // 每一页多少条
-      limit: 2
+      limit: 6
     };
   },
   methods: {
-    onSubmit() {
-      window.console.log("submit!");
+   
+    // 修改状态
+    changeStatus(items){
+      subjectStatus({
+        id : items.id
+      }).then(res => {
+        window.console.log("状态:",res)
+        if (res.code === 200) {
+          this.$message.success('主人,状态修改成功')
+          this.getSubjectList()
+        }
+      })
     },
     // 打开新增对话框
     openAdd() {
@@ -139,7 +130,8 @@ export default {
         window.console.log("学科列表:", res);
         this.tableData = res.data.items
       });
-    }
+    },
+   
   },
   created() {
       this.getSubjectList()
