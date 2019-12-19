@@ -32,12 +32,12 @@
       <!-- 基础表格 -->
       <el-table :data="tableData" style="width: 100%">
         <el-table-column type="index" label="序号"></el-table-column>
-        <el-table-column prop="name" label="学科编号"></el-table-column>
+        <el-table-column prop="rid" label="学科编号"></el-table-column>
         <el-table-column prop="name" label="学科名称"></el-table-column>
-        <el-table-column prop="address" label="简称"></el-table-column>
-        <el-table-column prop="address" label="创建者"></el-table-column>
-        <el-table-column prop="address" label="创建日期"></el-table-column>
-        <el-table-column prop="address" label="状态">
+        <el-table-column prop="short_name" label="简称"></el-table-column>
+        <el-table-column prop="username" label="创建者"></el-table-column>
+        <el-table-column prop="create_time" label="创建日期"></el-table-column>
+        <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             <span v-if="scope.row.status === 1">启用</span>
             <span class="red" v-else>禁用</span>
@@ -137,6 +137,7 @@ export default {
         ...this.formInline
       }).then(res => {
         window.console.log("学科列表:", res);
+        this.tableData = res.data.items
       });
     }
   },
