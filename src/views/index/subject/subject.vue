@@ -68,15 +68,17 @@
 </template>
 
 <script>
-import addDialog from "./components/addDialog.vue"
+import addDialog from "./components/addDialog.vue";
+import { subjectList } from "../../../api/subject.js";
 export default {
   name: "subject",
   // 注册组件:
-  components : {
-      addDialog,
+  components: {
+    addDialog
   },
   data() {
     return {
+      // 表单数据
       formInline: {
         // 学科编号
         rid: "",
@@ -87,7 +89,7 @@ export default {
         // 状态
         status: ""
       },
-
+      // 表格数据
       tableData: [
         {
           date: "2016-05-02",
@@ -110,12 +112,13 @@ export default {
           address: "上海市普陀区金沙江路 1516 弄"
         }
       ],
-
-     
-
       // 新增对话框是否弹出:
       AdddialogFormVisible: false,
-    
+      // 页数据
+      // 页码:
+      page : 1,
+      // 每一页多少条
+      limit : 2,
     };
   },
   methods: {
@@ -126,6 +129,15 @@ export default {
     openAdd() {
       this.AdddialogFormVisible = true;
     }
+  },
+  created() {
+    subjectList({
+        page:this.page,
+        limit:this.limit,
+        ...this.formInline,
+    }).then(res => {
+      window.console.log("学科列表:",res);
+    });
   }
 };
 </script>
@@ -162,6 +174,5 @@ export default {
       margin-top: 30px;
     }
   }
-  
 }
 </style>

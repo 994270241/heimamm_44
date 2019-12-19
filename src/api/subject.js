@@ -1,12 +1,4 @@
-// 导入axios
-import axios from "axios"
-
-// 统一设置 axios的设置
-const instance = axios.create({
-    baseURL: process.env.VUE_APP_BASEURL,
-    // 跨域携带cookie
-    withCredentials: true
-})
+import instance from "../utils/request.js"
 
 // 新增学科
 export function subjectAdd(data) {
@@ -21,7 +13,7 @@ export function subjectAdd(data) {
 export function subjectList(params) {
     return instance({
         url: '/subject/list',
-        method: 'post',
+        method: 'get',
         params,
     })
 }
