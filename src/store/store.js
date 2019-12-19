@@ -11,7 +11,7 @@ const store = new Vuex.Store({
         // 用户信息
         userInfo: '',
     },
-    // 修改数据的方法
+    // 修改数据的方法:
     mutations: {
         changeUserInfo(state,newUserInfo) {
             // state 获取到定义的数据
