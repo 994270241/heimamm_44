@@ -22,7 +22,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="getSubjectList">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button @click="clear">清除</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="openAdd">新增学科</el-button>
         </el-form-item>
       </el-form>
@@ -131,6 +131,13 @@ export default {
         this.tableData = res.data.items
       });
     },
+    // 清除数据
+    clear(){
+      for(var key in this.formInline){
+        this.formInline[key] = "";
+      }
+      this.getSubjectList()
+    }
    
   },
   created() {
