@@ -81,7 +81,7 @@
         </el-form-item>
         <!-- 邮箱 -->
         <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
-          <el-input v-model="regForm.email" autocomplete="off"  ></el-input>
+          <el-input v-model="regForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 手机 -->
         <el-form-item label="手机" :label-width="formLabelWidth" prop="phone">
@@ -133,7 +133,7 @@ import { login, sendsms, register } from "../../api/login.js";
 // import axios from "axios";
 
 // 导入并使用 token函数
-import {setToken} from "../../utils/token.js"
+import { setToken } from "../../utils/token.js";
 
 export default {
   name: "login",
@@ -261,16 +261,6 @@ export default {
             validator: checkEmail
           }
         ],
-        // 头像:
-        // avatr: [
-        //   {
-        //     required: true,
-        //     message: "头像不能为空",
-        //     trigger: "blur",
-
-        //   },
-        // ],
-
         // 密码:
         password: [
           {
@@ -340,7 +330,7 @@ export default {
         this.$refs.form.validate(valid => {
           if (valid) {
             // 验证成功
-            this.$message.success("恭喜你,成功了");
+            // this.$message.success("恭喜你,成功了");
             // 用户登录请求
             // axios({
             //   url: process.env.VUE_APP_BASEURL + "/login",
@@ -367,7 +357,7 @@ export default {
                 this.$message.success("主人!欢迎回来(づ￣ 3￣)づ");
                 // 这种不建议用 key可能会写错
                 // localStorage.setItem("token", res.data.data.token);
-                setToken(res.data.data.token)
+                setToken(res.data.data.token);
                 this.$router.push("/index");
               }
             });

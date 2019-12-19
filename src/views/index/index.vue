@@ -10,8 +10,8 @@
       </div>
       <!-- 右边 -->
       <div class="right">
-        <img class="user-icon" :src="$store.state.userInfo.avatar" alt />
-        <span class="username">{{$store.state.userInfo.username}},你好</span>
+        <img class="user-icon" :src="userInfo.avatar" alt />
+        <span class="username">{{userInfo.username}},你好</span>
         <el-button class="tuichu" size="small" @click="layout">退出</el-button>
       </div>
     </el-header>
@@ -142,7 +142,13 @@ export default {
           });
         });
     }
-  }
+  },
+  // 计算属性:
+  computed: {
+    userInfo(){
+      return this.$store.state.userInfo
+    }
+  },
 };
 </script>
 

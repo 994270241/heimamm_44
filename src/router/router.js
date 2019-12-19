@@ -92,7 +92,8 @@ router.beforeEach((to, from, next) => {
 
                     store.state.userInfo = res.data.data
                     store.state.userInfo.avatar = `${process.env.VUE_APP_BASEURL}/${store.state.userInfo.avatar}`
-
+                    
+                    store.commit("changeUserInfo",res.data.data)
                     next();
                 } else if (res.data.code === 206) {
                     // 提示用户

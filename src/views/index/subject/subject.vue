@@ -1,21 +1,15 @@
 <template>
-  
-      <img src="../../../assets/zd.jpg" alt="">
-  
+<div>123</div>
 </template>
 
 <script>
-
 export default {
-    name : 'subject',
-    data() {
-        return {
-            
-        }
-    },
-}
+  name: "subject",
+  data() {
+    return {};
+  }
+};
 </script>
 
-<style>
-
+<style lang="less">
 </style>
