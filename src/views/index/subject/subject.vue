@@ -46,20 +46,24 @@
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button type="text" @click="changeStatus(scope.row)">{{scope.row.status === 1 ? "禁用" : "启用"}}</el-button>
+            <el-button
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{scope.row.status === 1 ? "禁用" : "启用"}}</el-button>
             <el-button type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 分页器 -->
       <el-pagination
+        background
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage4"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :current-page="page"
+        :page-sizes="pageSizes"
+        :page-size="limit"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
       ></el-pagination>
     </el-card>
     <!-- 新增框 -->
@@ -69,7 +73,7 @@
 
 <script>
 import addDialog from "./components/addDialog.vue";
-import { subjectList,subjectStatus } from "../../../api/subject.js";
+import { subjectList, subjectStatus } from "../../../api/subject.js";
 export default {
   name: "subject",
   // 注册组件:
@@ -90,31 +94,32 @@ export default {
         status: ""
       },
       // 表格数据
-      tableData: [
-       
-      ],
+      tableData: [],
       // 新增对话框是否弹出:
       AdddialogFormVisible: false,
       // 页数据
       // 页码:
       page: 1,
       // 每一页多少条
-      limit: 6
+      limit: 2,
+      // 页容量选项数组
+      pageSizes: [2, 4, 6, 8],
+      // 总条数
+      total: 0
     };
   },
   methods: {
-   
     // 修改状态
-    changeStatus(items){
+    changeStatus(items) {
       subjectStatus({
-        id : items.id
+        id: items.id
       }).then(res => {
-        window.console.log("状态:",res)
+        window.console.log("状态:", res);
         if (res.code === 200) {
-          this.$message.success('主人,状态修改成功')
-          this.getSubjectList()
+          this.$message.success("主人,状态修改成功");
+          this.getSubjectList();
         }
-      })
+      });
     },
     // 打开新增对话框
     openAdd() {
@@ -128,20 +133,34 @@ export default {
         ...this.formInline
       }).then(res => {
         window.console.log("学科列表:", res);
-        this.tableData = res.data.items
+        this.tableData = res.data.items;
       });
     },
     // 清除数据
-    clear(){
-      for(var key in this.formInline){
+    clear() {
+      for (var key in this.formInline) {
         this.formInline[key] = "";
       }
-      this.getSubjectList()
+      this.getSubjectList();
+    },
+    // 页容量改变
+    handleSizeChange(size) {
+      // 保存页容量
+      this.limit = size;
+      // 重新获取数据
+      this.getSubjectList();
+    },
+    // 当前页码改变
+    handleCurrentChange(page) {
+      // 保存当前页
+      this.page = page;
+      // 重新获取数据
+      this.getSubjectList();
     }
-   
   },
+
   created() {
-      this.getSubjectList()
+    this.getSubjectList();
   }
 };
 </script>
