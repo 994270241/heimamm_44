@@ -50,7 +50,7 @@
               type="text"
               @click="changeStatus(scope.row)"
             >{{scope.row.status === 1 ? "禁用" : "启用"}}</el-button>
-            <el-button type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button type="text" @click="remmove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -73,7 +73,7 @@
 
 <script>
 import addDialog from "./components/addDialog.vue";
-import { subjectList, subjectStatus } from "../../../api/subject.js";
+import { subjectList, subjectStatus, subjectRemove } from "../../../api/subject.js";
 export default {
   name: "subject",
   // 注册组件:
@@ -142,6 +142,26 @@ export default {
         this.formInline[key] = "";
       }
       this.getSubjectList();
+    },
+    // 删除数据
+    remmove(items){
+      this.$confirm('你真的要删除这条数据吗?', '友情提示', {
+        confirmButtonText: '确认',
+        cancelButtonText: '删除',
+        type: 'warning'
+      }).then(() => {
+        // 调用移除接口
+        subjectRemove({
+          id : items.id
+        }).then(res => {
+          window.console.log('删除接口:',res)
+          if (res.code === 200) {
+            this.$message.error('删除成功')
+            this.getSubjectList();
+          }
+        })
+
+      }).catch(() => {});
     },
     // 页容量改变
     handleSizeChange(size) {
