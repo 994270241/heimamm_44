@@ -8,7 +8,7 @@
           <el-input v-model="formInline.rid" class="subject-bh"></el-input>
         </el-form-item>
         <el-form-item label="学科名称">
-          <el-input v-model="formInline.user" class="subject-name"></el-input>
+          <el-input v-model="formInline.name" class="subject-name"></el-input>
         </el-form-item>
         <el-form-item label="创建者">
           <el-input v-model="formInline.username" class="subject-bh"></el-input>
@@ -16,8 +16,8 @@
 
         <el-form-item label="状态">
           <el-select v-model="formInline.status" placeholder="请选择状态">
-            <el-option label="启用" value="shanghai"></el-option>
-            <el-option label="禁用" value="beijing"></el-option>
+            <el-option label="启用" value="1"></el-option>
+            <el-option label="禁用" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -43,13 +43,13 @@
             <span class="red" v-else>禁用</span>
           </template>
         </el-table-column>
-        <el-table-column prop="address" label="操作">
+        <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button type="text" @click="showEdit(scope.row)">编辑</el-button>
             <el-button
               type="text"
               @click="changeStatus(scope.row)"
-            >{{scope.row.status === 1 ? "禁用" : "启用"}}</el-button>
+            >{{scope.row.status === 1 ? "启用" : "禁用"}}</el-button>
             <el-button type="text" @click="remmove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -59,7 +59,7 @@
         background
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="page"
+        :current-page="+page"
         :page-sizes="pageSizes"
         :page-size="limit"
         layout="total, sizes, prev, pager, next, jumper"
@@ -68,17 +68,26 @@
     </el-card>
     <!-- 新增框 -->
     <addDialog></addDialog>
+    <!-- 编辑框 -->
+    <editDialog ref="editDialog"></editDialog>
   </div>
 </template>
 
 <script>
+// 导入组件 新增框
 import addDialog from "./components/addDialog.vue";
-import { subjectList, subjectStatus, subjectRemove } from "../../../api/subject.js";
+import editDialog from "./components/editDialog.vue";
+import {
+  subjectList,
+  subjectStatus,
+  subjectRemove
+} from "../../../api/subject.js";
 export default {
   name: "subject",
   // 注册组件:
   components: {
-    addDialog
+    addDialog,
+    editDialog
   },
   data() {
     return {
@@ -97,6 +106,8 @@ export default {
       tableData: [],
       // 新增对话框是否弹出:
       AdddialogFormVisible: false,
+      // 编辑对话框是否弹出:
+      editdialogFormVisible: false,
       // 页数据
       // 页码:
       page: 1,
@@ -125,6 +136,15 @@ export default {
     openAdd() {
       this.AdddialogFormVisible = true;
     },
+    // 打开编辑框
+    showEdit(items) {
+      this.editdialogFormVisible = true;
+      // 通过ref赋值
+      // 复杂类型的赋值 引用地址赋值1
+      window.console.log(items);
+      // 深拷贝
+      this.$refs.editDialog.editform = JSON.parse(JSON.stringify(items));
+    },
     // 获取学科列表
     getSubjectList() {
       subjectList({
@@ -134,6 +154,10 @@ export default {
       }).then(res => {
         window.console.log("学科列表:", res);
         this.tableData = res.data.items;
+        // 当前页码数
+        this.page = res.data.pagination.page;
+        // 保存总条数
+        this.total = res.data.pagination.total;
       });
     },
     // 清除数据
@@ -144,24 +168,25 @@ export default {
       this.getSubjectList();
     },
     // 删除数据
-    remmove(items){
-      this.$confirm('你真的要删除这条数据吗?', '友情提示', {
-        confirmButtonText: '确认',
-        cancelButtonText: '删除',
-        type: 'warning'
-      }).then(() => {
-        // 调用移除接口
-        subjectRemove({
-          id : items.id
-        }).then(res => {
-          window.console.log('删除接口:',res)
-          if (res.code === 200) {
-            this.$message.error('删除成功')
-            this.getSubjectList();
-          }
+    remmove(items) {
+      this.$confirm("你真的要删除这条数据吗?", "友情提示", {
+        confirmButtonText: "确认",
+        cancelButtonText: "删除",
+        type: "warning"
+      })
+        .then(() => {
+          // 调用移除接口
+          subjectRemove({
+            id: items.id
+          }).then(res => {
+            window.console.log("删除接口:", res);
+            if (res.code === 200) {
+              this.$message.error("删除成功");
+              this.getSubjectList();
+            }
+          });
         })
-
-      }).catch(() => {});
+        .catch(() => {});
     },
     // 页容量改变
     handleSizeChange(size) {
