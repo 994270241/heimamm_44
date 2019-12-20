@@ -33,3 +33,15 @@ export function logout() {
         }
     })
 }
+
+// 暴露接口 用户列表
+export function userList(params) {
+    return instance({
+        url: '/user/list',
+        method: 'get',
+        params,
+        headers: {
+            token: getToken()
+        }
+    })
+}
