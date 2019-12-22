@@ -69,7 +69,7 @@
 
 <script>
 import userDialog from "./components/userDialog.vue"
-import { userList } from "../../../api/user.js";
+import { userList } from "../../../api/userManager.js";
 export default {
   name: "user",
   // 注册组件：
@@ -79,7 +79,7 @@ export default {
   data() {
     return {
       formInline: {
-        user_name: "",
+        username: "",
         email: "",
         role_id: ""
       },
@@ -107,8 +107,8 @@ export default {
         window.console.log("用户列表:", res);
         if (res.data.code === 200) {
           this.tableData = res.data.data.items;
-          this.page = +res.data.data.pagination.page;
-          this.total = res.data.data.pagination.total;
+          this.page = +res.data.pagination.page;
+          this.total = res.data.pagination.total;
         }
       });
     },

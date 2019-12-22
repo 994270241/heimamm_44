@@ -34,26 +34,3 @@ export function logout() {
     })
 }
 
-// 暴露接口 用户列表
-export function userList(params) {
-    return instance({
-        url: '/user/list',
-        method: 'get',
-        params,
-        headers: {
-            token: getToken()
-        }
-    })
-}
-
-// 暴露接口 用户新增
-export function userAdd(data) {
-    return instance({
-        url: '/user/add',
-        method: 'post',
-        data,
-        headers: {
-            token: getToken()
-        }
-    })
-}
