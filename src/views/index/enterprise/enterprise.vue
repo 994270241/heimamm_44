@@ -52,9 +52,10 @@
             <el-button type="text" @click="showEdit(scope.row)">编辑</el-button>
             <el-button
               type="text"
+              v-power="['老师','学生']"
               @click="changeStatus(scope.row)"
             >{{scope.row.status === 1 ? "启用" : "禁用"}}</el-button>
-            <el-button type="text" @click="remmove(scope.row)">删除</el-button>
+            <el-button type="text" v-power="['老师','学生','管理员']" @click="remmove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

@@ -7,27 +7,18 @@ import login from "../views/login/login.vue"
 // 导入 index 组件
 import index from "../views/index/index.vue"
 
-// 导入嵌套路由的组件
-// 学科组件
-import subject from "../views/index/subject/subject.vue"
-// 用户组件
-import user from "../views/index/user/user.vue"
-// 数据组件
-import chart from "../views/index/chart/chart.vue"
-// 题库组件
-import question from "../views/index/question/question.vue"
-// 企业组件
-import enterprise from "../views/index/enterprise/enterprise.vue"
-
 
 // 导入token工具函数
 import { getToken, removeToken } from "../utils/token.js"
 // 导入用户信息接口
-import {userinfo} from "../api/user.js"
+import { userinfo } from "../api/user.js"
 // element-ui的 Message
 import { Message } from 'element-ui'
 // 导入仓库
 import store from "../store/store.js"
+
+// 导入嵌套路由
+import children from "./children.js"
 // Use一下 注册
 Vue.use(VueRouter)
 // 规则
@@ -36,31 +27,14 @@ const routes = [
         path: '/login',
         component: login
     },
+    // 首页规则
     {
         path: '/index',
         component: index,
-        children: [
-            {
-                path: "subject",  // index/subject
-                component: subject
-            },
-            {
-                path: "user",  // index/user
-                component: user
-            },
-            {
-                path: "chart",  // index/chart
-                component: chart
-            },
-            {
-                path: "question",  // index/question
-                component: question
-            },
-            {
-                path: "enterprise",  // index/enterprise
-                component: enterprise
-            },
-        ]
+        meta:{
+            power : ['超级管理员','管理员','老师','学生']
+        },
+        children
     }
 ]
 // 创建
@@ -90,11 +64,35 @@ router.beforeEach((to, from, next) => {
                     // this.userinfo = res.data.data
                     // this.avatar = `${process.env.VUE_APP_BASEURL}/${res.data.data.avatar}`
 
-                    store.state.userInfo = res.data.data
-                    store.state.userInfo.avatar = `${process.env.VUE_APP_BASEURL}/${store.state.userInfo.avatar}`
-                    
-                    store.commit("changeUserInfo",res.data.data)
-                    next();
+                    if (res.data.data.status === 0) {
+                        // 禁用状态
+                        Message.warning('主人,你被封号了,请等待管理员启用你,在访问')
+                        // 打回至登录页
+                        next('/login')
+                    } else {
+                        // 启用状态
+                        store.state.userInfo = res.data.data
+                        store.state.userInfo.avatar = `${process.env.VUE_APP_BASEURL}/${store.state.userInfo.avatar}`
+                        // 提交到仓库中去
+                        store.commit("changeUserInfo", res.data.data)
+                        // next()
+
+                        // 判断当前用户是否可以去
+                        //  window.console.log(to)
+                         window.console.log(res.data.data)
+                        // meta 访问的白名单匹配
+                        if (to.meta.power.includes(res.data.data.role)){
+                            // 存在
+                            next()
+                        }else{
+                            // 当前的这个用户角色不存在,无法访问这个页面
+                            Message.warning('你没有访问我的权限,请联系管理员')
+                        }
+                    }
+
+
+
+
                 } else if (res.data.code === 206) {
                     // 提示用户
                     Message.warning('主人,不准偷偷摸摸来房间哦')

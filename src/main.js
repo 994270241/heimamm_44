@@ -13,9 +13,12 @@ import router from './router/router.js'
 import ElementUI from 'element-ui';
 // 导入饿了么 的样式
 import 'element-ui/lib/theme-chalk/index.css';
+// import "./router/children.js"
 // 注册一下
 Vue.use(ElementUI);
 
+// 导入自定义指令
+import "./directives/directives.js"
 
 Vue.config.productionTip = false
 
@@ -23,5 +26,7 @@ new Vue({
   render: h => h(App),
   // 挂载到Vue示例上 router
   router,// router:router
-  store
+  store,
+  
+  
 }).$mount('#app')
