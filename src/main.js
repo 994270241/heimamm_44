@@ -2,6 +2,9 @@ import Vue from 'vue'
 import App from './App.vue'
 import store from "./store/store.js"
 
+// 过滤器只要保证运行 即可 不需使用值
+import './filters/filters.js'
+
 // 导入初始化代码
 import "./style/base.css"
 // 导入接收 路由

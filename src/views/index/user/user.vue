@@ -30,7 +30,7 @@
       <!-- 表格 -->
       <el-table :data="tableData" style="width: 100%" border>
         <el-table-column prop="date" label="序号" type="index"></el-table-column>
-        <el-table-column prop="username" label="用户名"></el-table-column>
+        <el-table-column prop="user_name" label="用户名"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="role_id" label="角色"></el-table-column>
@@ -62,17 +62,24 @@
         :total="total"
       ></el-pagination>
     </el-card>
+    <!-- 用户新增对话框 -->
+    <userDialog></userDialog>
   </div>
 </template>
 
 <script>
+import userDialog from "./components/userDialog.vue"
 import { userList } from "../../../api/user.js";
 export default {
   name: "user",
+  // 注册组件：
+  components:{
+    userDialog
+  },
   data() {
     return {
       formInline: {
-        username: "",
+        user_name: "",
         email: "",
         role_id: ""
       },
@@ -84,7 +91,7 @@ export default {
       // 页容量
       total: 0,
       // 每一页多少条
-      limit: 0,
+      limit: 2,
       // 用户对话框
       dialogTableVisible: false
     };
@@ -93,14 +100,14 @@ export default {
     // 用户列表数据：
     getUserList() {
       userList({
-        page: this.page,
-        limit: this.limit,
-        ...this.formInline
+        // page: this.page,
+        // limit: this.limit,
+        // ...this.formInline
       }).then(res => {
         window.console.log("用户列表:", res);
         if (res.data.code === 200) {
           this.tableData = res.data.data.items;
-          // this.page = +res.data.data.pagination.page;
+          this.page = +res.data.data.pagination.page;
           this.total = res.data.data.pagination.total;
         }
       });

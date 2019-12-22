@@ -45,3 +45,15 @@ export function userList(params) {
         }
     })
 }
+
+// 暴露接口 用户新增
+export function userAdd(data) {
+    return instance({
+        url: '/user/add',
+        method: 'post',
+        data,
+        headers: {
+            token: getToken()
+        }
+    })
+}
