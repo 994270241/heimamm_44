@@ -14,14 +14,15 @@
 
       <el-form-item label="角色" :label-width="formLabelWidth" prop="role_id">
         <el-select v-model="userform.role_id" placeholder="请选择角色">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+          <el-option label="管理员" value="2"></el-option>
+          <el-option label="老师" value="3"></el-option>
+          <el-option label="学生" value="4"></el-option>
         </el-select>
       </el-form-item>
 
       <el-form-item label="状态" :label-width="formLabelWidth">
         <el-select v-model="userform.status" placeholder="请选择状态">
-          <el-option label="开启" value="1"></el-option>
+          <el-option label="启用" value="1"></el-option>
           <el-option label="禁用" value="0"></el-option>
         </el-select>
       </el-form-item>
@@ -38,43 +39,12 @@
 </template>
 
 <script>
-import { userAdd } from "../../../../api/user.js";
+import { userAdd } from "../../../../api/userManager.js";
+import {checkphone,checkEmail} from "../../../../utils/validator.js"
 export default {
   name: "userDialog",
   data() {
-    // 自定义校验规则的函数
-    // 手机号
-    var checkphone = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("手机不能为空"));
-      } else {
-        // 利用判断手机号码格式
-        const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/;
-        // 判断是否符合
-        if (reg.test(value) == true) {
-          callback();
-        } else {
-          // 不满足 手机号码的格式
-          callback(new Error("手机号码输入错误"));
-        }
-      }
-    };
-    // 邮箱
-    var checkEmail = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("邮箱不能为空"));
-      } else {
-        // 利用判断手机号码格式
-        const reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/;
-        // 判断是否符合
-        if (reg.test(value) == true) {
-          callback();
-        } else {
-          // 不满足 手机号码的格式
-          callback(new Error("邮箱格式输入错误"));
-        }
-      }
-    };
+    
     return {
       // 宽度
       formLabelWidth: "80px",
@@ -125,11 +95,11 @@ export default {
           // 对
           userAdd(this.userform).then(res => {
             window.console.log("新增用户:", res);
-            if (res.data.code === 200) {
+            if (res.code === 200) {
               this.$message.success("新增成功");
               this.$parent.dialogTableVisible = false;
-              // this.$parent.getUserList()
-            } else if (res.data.code === 201) {
+              this.$parent.getUserList()
+            } else if (res.code === 201) {
               this.$message.error("主人，用户名已存在，请重新输入");
             }
           });

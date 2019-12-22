@@ -10,16 +10,16 @@
         <el-form-item label="用户邮箱">
           <el-input v-model="formInline.email" placeholder="审批人"></el-input>
         </el-form-item>
-
         <el-form-item label="角色">
           <el-select v-model="formInline.role_id">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
+            <el-option label="管理员" value="2"></el-option>
+            <el-option label="老师" value="3"></el-option>
+            <el-option label="学生" value="4"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">搜索</el-button>
-          <el-button>清除</el-button>
+          <el-button type="primary" @click="getUserList">搜索</el-button>
+          <el-button @click="clear">清除</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="dialogTableVisible = true">新增用户</el-button>
         </el-form-item>
       </el-form>
@@ -29,11 +29,11 @@
     <el-card class="box-card main-card">
       <!-- 表格 -->
       <el-table :data="tableData" style="width: 100%" border>
-        <el-table-column prop="date" label="序号" type="index"></el-table-column>
-        <el-table-column prop="user_name" label="用户名"></el-table-column>
+        <el-table-column label="序号" type="index"></el-table-column>
+        <el-table-column prop="username" label="用户名"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
-        <el-table-column prop="role_id" label="角色"></el-table-column>
+        <el-table-column prop="role" label="角色"></el-table-column>
         <el-table-column prop="remark" label="备注"></el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
@@ -44,9 +44,13 @@
 
         <el-table-column prop="address" label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-            <el-button size="mini" type="text" @click="handleEdit(scope.$index, scope.row)">禁用</el-button>
-            <el-button size="mini" type="text" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            <el-button size="mini" type="text" @click="showEdit(scope.row)">编辑</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              @click="changeStatus(scope.row)"
+            >{{scope.row.status === 1 ? "禁用" : '启用'}}</el-button>
+            <el-button size="mini" type="text" @click="remove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -64,17 +68,22 @@
     </el-card>
     <!-- 用户新增对话框 -->
     <userDialog></userDialog>
+    <!-- 编辑框 -->
+    <editDialog ref='editDialog'></editDialog>
   </div>
 </template>
 
 <script>
-import userDialog from "./components/userDialog.vue"
-import { userList } from "../../../api/userManager.js";
+// 导入用户新增框
+import userDialog from "./components/userDialog.vue";
+// 导入用户编辑
+import editDialog from "./components/editDialog.vue"
+import { userList, userStatus,userRemove } from "../../../api/userManager.js";
 export default {
   name: "user",
   // 注册组件：
-  components:{
-    userDialog
+  components: {
+    userDialog,editDialog
   },
   data() {
     return {
@@ -93,20 +102,22 @@ export default {
       // 每一页多少条
       limit: 2,
       // 用户对话框
-      dialogTableVisible: false
+      dialogTableVisible: false,
+       // 是否显示 编辑框
+      editFormVisible:false,
     };
   },
   methods: {
     // 用户列表数据：
     getUserList() {
       userList({
-        // page: this.page,
-        // limit: this.limit,
-        // ...this.formInline
+        page: this.page,
+        limit: this.limit,
+        ...this.formInline
       }).then(res => {
         window.console.log("用户列表:", res);
-        if (res.data.code === 200) {
-          this.tableData = res.data.data.items;
+        if (res.code === 200) {
+          this.tableData = res.data.items;
           this.page = +res.data.pagination.page;
           this.total = res.data.pagination.total;
         }
@@ -119,11 +130,53 @@ export default {
     },
     // 当前页码
     handleCurrentChange(val) {
-      window.console.log(val);
+      // window.console.log(val);
       this.page = val;
       this.getUserList();
+    },
+    // 改变状态
+    changeStatus(item) {
+      userStatus({
+        id: item.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.$message.success("状态修改成功");
+          this.getUserList();
+        }
+      });
+    },
+    // 清除
+    clear(){
+      this.formInline = {},
+      this.getUserList()
+    },
+    // 删除
+    remove(item){
+       this.$confirm("你要删除嘛？", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          // 替换为用户的删除接口
+          userRemove({ id: item.id }).then(res => {
+            // window.console.log(res)
+            if(res.code===200){
+              this.$message.success("删除成功")
+              this.getUserList()
+            }
+          });
+        })
+        .catch(() => {});
+
+    },
+    showEdit(item) {
+      this.editFormVisible = true;
+      
+      this.$refs.editDialog.editForm = JSON.parse(JSON.stringify(item))
     }
   },
+
   created() {
     this.getUserList();
   }
