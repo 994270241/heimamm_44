@@ -1,6 +1,7 @@
 <template>
   <!-- 新增对话框 -->
   <el-dialog
+    @opened="opened"
     class="add-dialog"
     fullscreen
     title="新增题库"
@@ -55,6 +56,84 @@
           <el-radio :label="3">困难</el-radio>
         </el-radio-group>
       </el-form-item>
+      <!-- 分割线 -->
+      <el-divider></el-divider>
+      <el-form-item label="试题标题" prop="title"></el-form-item>
+      <div class="title-toolbar"></div>
+      <div class="title-content"></div>
+      <!-- 选项区域-单选 -->
+      <el-form-item label="单选" prop="single_select_answer">
+        <el-radio-group v-model="addform.single_select_answer">
+          <!-- 选项A -->
+          <div class="radio-box">
+            <el-radio label="A">A</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[0].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageAUrl" :src="imageAUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+           <!-- 选项B -->
+          <div class="radio-box">
+            <el-radio label="B">B</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[1].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleBvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageBUrl" :src="imageBUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+           <!-- 选项C -->
+          <div class="radio-box">
+            <el-radio label="C">C</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[2].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleCvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageCUrl" :src="imageCUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+           <!-- 选项D -->
+          <div class="radio-box">
+            <el-radio label="D">D</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[3].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleDvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageDUrl" :src="imageDUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+        </el-radio-group>
+      </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="$parent.AdddialogFormVisible = false">取 消</el-button>
@@ -67,26 +146,49 @@
 import { subjectAdd } from "../../../../api/subject.js";
 // 导入城市插件
 import { regionData } from "element-china-area-data";
+// 导入王编辑器
+import wangeditor from "wangeditor";
 export default {
   data() {
     return {
       // 级联选择器的数据
       options: regionData,
       // 级联选者器绑定的选项
-      props: { expandTrigger: 'hover', value: 'label'},
+      props: { expandTrigger: "hover", value: "label" },
+      // 富文本编辑器 标题部分
+      titleEditor: undefined,
+      // 本地预览地址
+      imageAUrl: "",
+      imageBUrl: "",
+      imageCUrl: "",
+      imageDUrl: "",
+      // 文件上传的地址
+      uploadUrl: process.env.VUE_APP_BASEURL + "/question/upload",
+
       // 新增表单:
       addform: {
-        // 编号
-        rid: "",
-        // 名字,
-        name: "",
-        // 简称
-        short_name: "",
-        // 简介
-        intro: "",
-        // 备注
-        remark: "",
-        city: ""
+        select_options: [
+          {
+            label: "A",
+            text: "狗不理",
+            image: "upload/20191129/fd5f03a07d95e3948860240564b180e4.jpeg"
+          },
+          {
+            label: "B",
+            text: "猫不理",
+            image: "upload/20191129/e93e7bb72accda7f3159cdabc4203991.jpeg"
+          },
+          {
+            label: "C",
+            text: "麻花",
+            image: "upload/20191129/b7caf98be9d0aa6764b0112ba0dfa19e.jpeg"
+          },
+          {
+            label: "D",
+            text: "炸酱面",
+            image: "upload/20191129/4067f19ab53a5e8388ad3459e23110f0.jpeg"
+          }
+        ]
       },
       // 表单验证规则
       rules: {
@@ -98,6 +200,56 @@ export default {
     };
   },
   methods: {
+    // 王编辑器
+    opened() {
+      if (this.titleEditor === undefined) {
+        this.titleEditor = new wangeditor(".title-toolbar", "title-content");
+        this.titleEditor.customConfig.onchange = html => {
+          // html 即变化之后的内容
+          // window.console.log(html);
+          // 设置给标题
+          this.addform.title = html;
+        };
+
+        this.titleEditor.create();
+      }
+    },
+    // 上传组件的钩子
+    handleAvatarSuccess(res, file) {
+      this.imageAUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.addform.select_options[0].image = res.data.url;
+    },
+     // 上传组件的钩子
+    handleBvatarSuccess(res, file) {
+      this.imageBUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.addform.select_options[1].image = res.data.url;
+    },
+     // 上传组件的钩子
+    handleCvatarSuccess(res, file) {
+      this.imageCUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.addform.select_options[2].image = res.data.url;
+    },
+     // 上传组件的钩子
+    handleDvatarSuccess(res, file) {
+      this.imageDUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.addform.select_options[3].image = res.data.url;
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG或png 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
     //   新增学科
     submitForm() {
       this.$refs.addform.validate(valid => {
@@ -137,6 +289,58 @@ export default {
     }
     .el-dialog__footer {
       text-align: center;
+    }
+  }
+  .title-toolbar {
+    border: 1px solid #c7c7c7;
+    border-bottom: none;
+  }
+  .title-content {
+    border: 1px solid #c7c7c7;
+    height: 100px;
+  }
+  // 上传组件的样式
+  .avatar-uploader {
+    margin-left: 20px;
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+  // 表单宽度
+  .el-form {
+    width: 60%;
+    margin: 0 auto;
+  }
+  .el-radio-group {
+    width: 100%;
+  }
+  .radio-box {
+    display: flex;
+    align-items: center;
+    margin-top: 45px;
+    // 小间隙
+    .el-checkbox {
+      margin-right: 30px;
     }
   }
 }
