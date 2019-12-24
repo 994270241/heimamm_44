@@ -62,7 +62,7 @@
       <div class="title-toolbar"></div>
       <div class="title-content"></div>
       <!-- 选项区域-单选 -->
-      <el-form-item label="单选" prop="single_select_answer">
+      <el-form-item label="单选" v-if="addform.type == 1" prop="single_select_answer">
         <el-radio-group v-model="addform.single_select_answer">
           <!-- 选项A -->
           <div class="radio-box">
@@ -134,6 +134,79 @@
           </div>
         </el-radio-group>
       </el-form-item>
+      <!-- 选项区域-多选 -->
+      <el-form-item label="多选" v-else-if="addform.type == 2" prop="multiple_select_answer">
+        <el-checkbox-group v-model="addform.multiple_select_answer">
+          <!-- 选项A -->
+          <div class="radio-box">
+            <el-checkbox label="A">A</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[0].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageAUrl" :src="imageAUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项B -->
+          <div class="radio-box">
+            <el-checkbox label="B">B</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[1].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleBvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageBUrl" :src="imageBUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项C -->
+          <div class="radio-box">
+            <el-checkbox label="C">C</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[2].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleCvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageCUrl" :src="imageCUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项D -->
+          <div class="radio-box">
+            <el-checkbox label="D">D</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="addform.select_options[3].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleDvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageDUrl" :src="imageDUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+        </el-checkbox-group>
+      </el-form-item>
       <!-- 分割线 -->
       <el-divider></el-divider>
       <!-- 视频上传区域 -->
@@ -195,7 +268,10 @@ export default {
       VideoUrl: "",
       // 新增表单:
       addform: {
-        remark: "",
+        // 默认单选
+        type : 1,
+        // 多选的答案
+        multiple_select_answer : [],
         select_options: [
           {
             label: "A",
