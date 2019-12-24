@@ -70,7 +70,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="getQuestionList">搜索</el-button>
+          <el-button type="primary" @click="getData">搜索</el-button>
           <el-button @click="clear">清除</el-button>
           <el-button type="primary" icon="el-icon-plus" @click="AdddialogFormVisible = true">新增试题</el-button>
         </el-form-item>
@@ -88,7 +88,7 @@
         </el-table-column>
         <el-table-column prop="name" label="学科·阶段">
           <template slot-scope="scope">
-            {{scope.row.subject.name}}
+            {{scope.row.subject_name}}-
             {{ {1 : "初级" , 2 : '中级' , 3: '高级'}[scope.row.step] }}
           </template>
         </el-table-column>
@@ -176,6 +176,7 @@ export default {
       this.getData();
   },
   methods: {
+    // 获取题库数据
     getData() {
       questionList({
         ...this.formInline
@@ -183,7 +184,8 @@ export default {
         window.console.log("题库列表:", res);
         this.tableData = res.data.items;
       });
-    }
+    },
+     
   }
 };
 </script>
