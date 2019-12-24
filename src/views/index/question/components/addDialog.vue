@@ -208,6 +208,9 @@
         </el-checkbox-group>
       </el-form-item>
       <!-- 简答题区域 -->
+      <el-form-item v-else label="简答题" prop="short_answer">
+          <el-input  v-model="addform.short_answer" type="textarea" :rows="2"></el-input>
+      </el-form-item>
       <!-- 分割线 -->
       <el-divider></el-divider>
       <!-- 视频上传区域 -->
