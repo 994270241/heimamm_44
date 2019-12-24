@@ -245,7 +245,7 @@
 </template>
 
 <script>
-import { questionAdd } from "../../../../api/question.js";
+import { questionAdd, } from "../../../../api/question.js";
 // 导入城市插件
 import { regionData } from "element-china-area-data";
 // 导入王编辑器
@@ -429,7 +429,7 @@ export default {
             if (res.code === 200) {
               this.$message.success("新增成功");
               this.$parent.AdddialogFormVisible = false;
-              this.$parent.getSubjectList();
+              this.$parent.getData();
             } else if (res.code === 201) {
               this.$message.error("学科编号已经存在了，请重新输入");
             }

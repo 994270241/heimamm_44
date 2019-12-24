@@ -6,41 +6,52 @@
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="学科">
           <el-select v-model="formInline.subject" placeholder="请选择学科">
-            <el-option v-for="item in subjectList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-            
+            <el-option
+              v-for="item in subjectList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="阶段">
           <el-select v-model="formInline.step" placeholder="请选择阶段">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
+            <el-option label="初级" value="1"></el-option>
+            <el-option label="中级" value="2"></el-option>
+            <el-option label="高级" value="3"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="企业">
           <el-select v-model="formInline.enterprise" placeholder="请选择企业">
-            <el-option v-for="item in enterpriseList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-           
+            <el-option
+              v-for="item in enterpriseList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="题型">
           <el-select v-model="formInline.type" placeholder="请选择题型">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
+            <el-option label="单选" value="1"></el-option>
+            <el-option label="多选" value="2"></el-option>
+            <el-option label="简答" value="3"></el-option>
           </el-select>
         </el-form-item>
-        <br>
+        <br />
         <el-form-item label="难度">
           <el-select v-model="formInline.difficulty" placeholder="请选择难度">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
+            <el-option label="简单" value="1"></el-option>
+            <el-option label="一般" value="2"></el-option>
+            <el-option label="困难" value="3"></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="作者">
-           <el-input v-model="formInline.username"></el-input>
+          <el-input v-model="formInline.username"></el-input>
         </el-form-item>
 
         <el-form-item label="状态">
@@ -51,14 +62,11 @@
         </el-form-item>
 
         <el-form-item label="日期">
-          <el-select v-model="formInline.create_date" placeholder="请选择日期">
-            <el-option label="启用" value="1"></el-option>
-            <el-option label="禁用" value="0"></el-option>
-          </el-select>
+          <el-date-picker v-model="formInline.create_time"  placeholder="选择日期"></el-date-picker>
         </el-form-item>
-        <br>
-          <el-form-item label="标题" >
-          <el-input v-model="formInline.title" class='title-input'></el-input>
+        <br />
+        <el-form-item label="标题">
+          <el-input v-model="formInline.title" class="title-input"></el-input>
         </el-form-item>
 
         <el-form-item>
@@ -71,12 +79,23 @@
     <!-- 身体卡片 -->
     <el-card class="main-card">
       <!-- 基础表格 -->
-      <el-table :data="tableData" style="width: 100%" border >
+      <el-table :data="tableData" style="width: 100%" border>
         <el-table-column type="index" label="序号" id="xuhao"></el-table-column>
-        <el-table-column prop="rid" label="题目"></el-table-column>
-        <el-table-column prop="name" label="学科·阶段"></el-table-column>
-        <el-table-column prop="short_name" label="题型"></el-table-column>
-        <el-table-column prop="username" label="企业"></el-table-column>
+        <el-table-column prop="rid" label="题目">
+          <template slot-scope="scope">
+            <span v-html="scope.row.title"></span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="学科·阶段">
+          <template slot-scope="scope">
+            {{scope.row.subject.name}}
+            {{ {1 : "初级" , 2 : '中级' , 3: '高级'}[scope.row.step] }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="short_name" label="题型">
+          <template slot-scope="scope">{{ {1 : '单选', 2 : '多选', 3:'简答'}[scope.row.type] }}</template>
+        </el-table-column>
+        <el-table-column prop="enterprise_name" label="企业"></el-table-column>
         <el-table-column prop="username" label="创建者"></el-table-column>
         <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
@@ -84,11 +103,11 @@
             <span class="red" v-else>禁用</span>
           </template>
         </el-table-column>
-        <el-table-column prop="username" label="访问量"></el-table-column>
+        <el-table-column prop="reads" label="访问量"></el-table-column>
 
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text"  @click="showEdit(scope.row)">编辑</el-button>
+            <el-button type="text" @click="showEdit(scope.row)">编辑</el-button>
             <el-button
               type="text"
               v-power="['老师','学生']"
@@ -119,42 +138,54 @@
 
 <script>
 // 企业列表接口
-import {enterpriseList} from "../../../api/enterprise"
+import { enterpriseList } from "../../../api/enterprise";
 // 学科列表接口
-import {subjectList} from "../../../api/subject"
+import { subjectList } from "../../../api/subject";
+// 题库列表接口
+import { questionList } from "../../../api/question.js";
 // 导入新增框
-import addDialog from "./components/addDialog.vue"
+import addDialog from "./components/addDialog.vue";
 export default {
-    name :'question',
-    components : {
-      addDialog
-    },
-    data() {
-      return {
-        formInline : {},
-        tableData : [],
-        // 定义企业数据
-        enterpriseList : [],
-        // 定义学科数据
-        subjectList : [],
-        // 是否开启新增框
-        AdddialogFormVisible : false,
-      }
-    },
-    created() {
-      // 获取企业数据
-      enterpriseList().then(res => {
-        window.console.log(res)
-        this.enterpriseList = res.data.items
-      })
-      // 获取学科数据
-      subjectList().then(res => {
-         window.console.log(res)
-         this.subjectList = res.data.items
-
-      })
-    },
-}
+  name: "question",
+  components: {
+    addDialog
+  },
+  data() {
+    return {
+      formInline: {},
+      tableData: [],
+      // 定义企业数据
+      enterpriseList: [],
+      // 定义学科数据
+      subjectList: [],
+      // 是否开启新增框
+      AdddialogFormVisible: false
+    };
+  },
+  created() {
+    // 获取企业数据
+    enterpriseList().then(res => {
+      // window.console.log(res)
+      this.enterpriseList = res.data.items;
+    });
+    // 获取学科数据
+    subjectList().then(res => {
+      //  window.console.log(res)
+      this.subjectList = res.data.items;
+    }),
+      this.getData();
+  },
+  methods: {
+    getData() {
+      questionList({
+        ...this.formInline
+      }).then(res => {
+        window.console.log("题库列表:", res);
+        this.tableData = res.data.items;
+      });
+    }
+  }
+};
 </script>
 
 <style lang="less">
@@ -172,18 +203,17 @@ export default {
       width: 149px;
       height: 39px;
     }
-    .el-input__inner{
+    .el-input__inner {
       width: 150px;
     }
-    .el-form-item__label{
+    .el-form-item__label {
       padding: 0 30px;
     }
-    .title-input.el-input{
-      .el-input__inner{
+    .title-input.el-input {
+      .el-input__inner {
         width: 398px;
         padding-right: 0px;
       }
-      
     }
   }
   .main-card {
@@ -201,7 +231,6 @@ export default {
       text-align: center;
       margin-top: 30px;
     }
-    
   }
 }
 </style>
