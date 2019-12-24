@@ -62,7 +62,7 @@
         </el-form-item>
 
         <el-form-item label="日期">
-          <el-date-picker v-model="formInline.create_time"  placeholder="选择日期"></el-date-picker>
+          <el-date-picker v-model="formInline.create_time" placeholder="选择日期"></el-date-picker>
         </el-form-item>
         <br />
         <el-form-item label="标题">
@@ -142,7 +142,11 @@ import { enterpriseList } from "../../../api/enterprise";
 // 学科列表接口
 import { subjectList } from "../../../api/subject";
 // 题库列表接口
-import { questionList,questionStatus } from "../../../api/question.js";
+import {
+  questionList,
+  questionStatus,
+  questionRemove
+} from "../../../api/question.js";
 // 导入新增框
 import addDialog from "./components/addDialog.vue";
 export default {
@@ -161,14 +165,13 @@ export default {
       // 是否开启新增框
       AdddialogFormVisible: false,
       // 页码
-      page : 1,
+      page: 1,
       // 页容量
-      limit : 2,
+      limit: 2,
       // 页容量数组
-      pageSizes : [3,6,9,12],
+      pageSizes: [3, 6, 9, 12],
       // 总条数
-      total : 0,
-
+      total: 0
     };
   },
   created() {
@@ -188,38 +191,67 @@ export default {
     // 获取题库数据
     getData() {
       questionList({
-        page : this.page ,
-        limit : this.limit,
+        page: this.page,
+        limit: this.limit,
         ...this.formInline
       }).then(res => {
         window.console.log("题库列表:", res);
         this.tableData = res.data.items;
         // 总条数
-        this.total = res.data.pagination.total
+        this.total = res.data.pagination.total;
       });
     },
     // 页容量改变
-    handleSizeChange(value){
-        this.limit = value
-        this.getData()
+    handleSizeChange(value) {
+      this.limit = value;
+      this.getData();
     },
     // 页码改变
-    handleCurrentChange(value){
-      this.page = value
-      this.getData()
+    handleCurrentChange(value) {
+      this.page = value;
+      this.getData();
     },
     // 状态改变
-    changeStatus(item){
-        questionStatus({
-          id : item.id
-        }).then(res => {
-          if (res.code === 200){
-            this.$message.success('状体修改成功')
-            this.getData()
-          }
+    changeStatus(item) {
+      questionStatus({
+        id: item.id
+      }).then(res => {
+        if (res.code === 200) {
+          this.$message.success("状体修改成功");
+          this.getData();
+        }
+      });
+    },
+    // 数据删除
+    remmove(item) {
+      this.$confirm("你真的要把他删掉吗？o(╥﹏╥)o", "友情提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          questionRemove({
+            id: item.id
+          }).then(res => {
+            if (res.code === 200) {
+              this.$message.success("删除成功");
+              if (this.tableData.length == 1) {
+                // 一会刷新就没有数据了
+                // 修改页码
+                this.page--;
+                // 三元表达式
+                // 如果 this.page 小于1 那么就变为1 否则 是什么就是什么
+                // this.page = this.page<1?1:this.page
+                if (this.page < 1) {
+                  this.page = 1;
+                }
+              }
+              this.getData();
+            }
+          });
         })
+        .catch(() => {});
     }
-     
   }
 };
 </script>
