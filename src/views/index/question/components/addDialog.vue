@@ -207,12 +207,13 @@
           </div>
         </el-checkbox-group>
       </el-form-item>
+      <!-- 简答题区域 -->
       <!-- 分割线 -->
       <el-divider></el-divider>
       <!-- 视频上传区域 -->
       <el-form-item label="解析视频">
         <el-upload
-          action="https://jsonplaceholder.typicode.com/posts/"
+          :action="uploadUrl"
           :show-file-list="false"
           :on-success="handleVideoSuccess"
           :before-upload="beforeVideoUpload"
@@ -220,7 +221,7 @@
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">只能上传mp4文件，且不超过2000kb</div>
         </el-upload>
-        <video :src="VideoUrl" v-if="VideoUrl" class="preview-video"></video>
+        <video :src="VideoUrl" v-if="VideoUrl" controls class="preview-video"></video>
       </el-form-item>
       <el-divider></el-divider>
       <!-- 答案解析富文本 -->
@@ -399,7 +400,7 @@ export default {
 
     // 视频上传组件的钩子
     handleVideoSuccess(res, file) {
-      this.imageDUrl = URL.createObjectURL(file.raw);
+      this.VideoUrl = URL.createObjectURL(file.raw);
       // 设置给第一个选项的 图片地址
       this.addform.video = res.data.url;
     },
