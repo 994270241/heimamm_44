@@ -28,27 +28,85 @@
         </li>
       </ul>
     </el-card>
+    <div class="main-card" ref="mainCard"></div>
   </div>
 </template>
 
 <script>
-import {dataTitle} from "../../../api/chart.js"
+// 导入echarts
+import echarts from "echarts";
+// 导入接口
+import { dataTitle,dataStatistics } from "../../../api/chart.js";
 export default {
   name: "chart",
   data() {
     return {
-      headData : {
-
-      }
-    }
+      headData: {}
+    };
   },
   created() {
-    dataTitle({
+    dataTitle({}).then(res => {
+      window.console.log("数据列表,", res);
+      this.headData = res.data;
+    });
+  },
+  mounted() {
+   dataStatistics().then(res => {
+        window.console.log(res)
+        // window.console.log(res);
+      // 基于准备好的dom，初始化echarts实例
+      var myChart = echarts.init(this.$refs.mainCard);
 
-    }).then(res => {
-      window.console.log('数据列表,',res)
-      this.headData = res.data
-    })
+      // 标题的 名字数字
+      const legendData = [];
+      res.data.forEach(v=>{
+        legendData.push(v.name)
+      })
+      // 指定图表的配置项和数据
+      var option = {
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+        legend: {
+          orient: "vertical",
+          x: "right",
+          data: legendData
+        },
+        series: [
+          {
+            color: ["#f76137", "#f9b358", "#409eff"],
+            name: "访问来源",
+            type: "pie",
+            radius: ["50%", "70%"],
+            avoidLabelOverlap: false,
+            label: {
+              normal: {
+                show: false,
+                position: "center"
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: "30",
+                  fontWeight: "bold"
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: false
+              }
+            },
+            // 使用服务器返回的数据替换即可
+            data: res.data
+          }
+        ]
+      };
+
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+   })
   },
 };
 </script>
@@ -57,7 +115,7 @@ export default {
 .chart-container {
   .head-card {
     height: 149px;
-    .el-card__body{
+    .el-card__body {
       padding-top: 10px;
     }
     ul {
@@ -84,9 +142,9 @@ export default {
             border-color: #f76238;
             color: #f76238;
           }
-          &.green{
+          &.green {
             border-color: #74d691;
-            color: #74d691
+            color: #74d691;
           }
         }
         p {
@@ -95,6 +153,13 @@ export default {
         }
       }
     }
+  }
+  .main-card {
+    margin-top: 13px;
+    height: 571px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 2px 5px 0px rgba(63, 63, 63, 0.35);
+    border-radius: 4px;
   }
 }
 </style>
