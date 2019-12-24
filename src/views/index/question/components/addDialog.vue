@@ -41,7 +41,7 @@
         <el-cascader v-model="addform.city" :options="options" :props="props"></el-cascader>
       </el-form-item>
 
-      <el-form-item label="题型" :label-width="formLabelWidth">
+      <el-form-item label="题型" :label-width="formLabelWidth" prop="type">
         <el-radio-group v-model="addform.type">
           <el-radio :label="1">单选</el-radio>
           <el-radio :label="2">多选</el-radio>
@@ -49,7 +49,7 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="难度" :label-width="formLabelWidth">
+      <el-form-item label="难度" :label-width="formLabelWidth" prop="difficulty">
         <el-radio-group v-model="addform.difficulty">
           <el-radio :label="1">简单</el-radio>
           <el-radio :label="2">一般</el-radio>
@@ -157,9 +157,8 @@
       <el-divider></el-divider>
       <!-- 试题备注 -->
       <el-form-item label="试题备注" prop="remark">
-        <el-input v-model="addform.remark" type="textarea" :rows="2" placeholder=""></el-input>
+        <el-input v-model="addform.remark" type="textarea" :rows="2" placeholder></el-input>
       </el-form-item>
-
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="$parent.AdddialogFormVisible = false">取 消</el-button>
@@ -169,7 +168,7 @@
 </template>
 
 <script>
-import { subjectAdd } from "../../../../api/subject.js";
+import { questionAdd } from "../../../../api/question.js";
 // 导入城市插件
 import { regionData } from "element-china-area-data";
 // 导入王编辑器
@@ -177,7 +176,6 @@ import wangeditor from "wangeditor";
 export default {
   data() {
     return {
-      
       // 级联选择器的数据
       options: regionData,
       // 级联选者器绑定的选项
@@ -197,7 +195,7 @@ export default {
       VideoUrl: "",
       // 新增表单:
       addform: {
-        remark : '',
+        remark: "",
         select_options: [
           {
             label: "A",
@@ -223,8 +221,46 @@ export default {
       },
       // 表单验证规则
       rules: {
-        rid: [{ required: true, message: "学科编号不能为空", trigger: "blur" }],
-        name: [{ required: true, message: "学科名称不能为空", trigger: "blur" }]
+        // 学科 subject,
+        subject: [
+          { required: true, message: "学科不能为空", trigger: "change" }
+        ],
+        // 阶段 step,
+        step: [{ required: true, message: "阶段不能为空", trigger: "change" }],
+        // 企业 enterprise,
+        enterprise: [
+          { required: true, message: "企业不能为空", trigger: "change" }
+        ],
+        // 城市 city,
+        city: [{ required: true, message: "城市不能为空", trigger: "change" }],
+        // 题型 type,
+        type: [{ required: true, message: "题型不能为空", trigger: "change" }],
+        // 难度 difficulty,
+        difficulty: [
+          { required: true, message: "难度不能为空", trigger: "change" }
+        ],
+        // 标题 title,
+        title: [{ required: true, message: "标题不能为空", trigger: "change" }],
+        // 答案 single_select_answer,
+        single_select_answer: [
+          { required: true, message: "答案不能为空", trigger: "change" }
+        ],
+        // 解析 answer_analyze,
+        answer_analyze: [
+          { required: true, message: "解析不能为空", trigger: "change" }
+        ],
+        // 备注 remark,
+        remark: [
+          { required: true, message: "备注不能为空", trigger: "change" }
+        ],
+        // 多选的 规则 multiple_select_answer
+        multiple_select_answer: [
+          { required: true, message: "多选不能为空", trigger: "change" }
+        ],
+        // 简答题的 规则 multiple_select_answer
+        short_answer: [
+          { required: true, message: "多选不能为空", trigger: "change" }
+        ]
       },
       // 宽度:
       formLabelWidth: "85px"
@@ -308,7 +344,7 @@ export default {
       this.$refs.addform.validate(valid => {
         if (valid) {
           // 对
-          subjectAdd(this.addform).then(res => {
+          questionAdd(this.addform).then(res => {
             window.console.log("新增学科:", res);
             if (res.code === 200) {
               this.$message.success("新增成功");
