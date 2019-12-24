@@ -159,7 +159,16 @@ export default {
       // 定义学科数据
       subjectList: [],
       // 是否开启新增框
-      AdddialogFormVisible: false
+      AdddialogFormVisible: false,
+      // 页码
+      page : 1,
+      // 页容量
+      limit : 2,
+      // 页容量数组
+      pageSizes : [3,6,9,12],
+      // 总条数
+      total : 0,
+
     };
   },
   created() {
@@ -179,12 +188,26 @@ export default {
     // 获取题库数据
     getData() {
       questionList({
+        page : this.page ,
+        limit : this.limit,
         ...this.formInline
       }).then(res => {
         window.console.log("题库列表:", res);
         this.tableData = res.data.items;
+        // 总条数
+        this.total = res.data.pagination.total
       });
     },
+    // 页容量改变
+    handleSizeChange(value){
+        this.limit = value
+        this.getData()
+    },
+    // 页码改变
+    handleCurrentChange(value){
+      this.page = value
+      this.getData()
+    }
      
   }
 };
