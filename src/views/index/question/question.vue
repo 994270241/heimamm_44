@@ -149,10 +149,12 @@ import {
 } from "../../../api/question.js";
 // 导入新增框
 import addDialog from "./components/addDialog.vue";
+import editDialog from "./components/editDialog.vue";
 export default {
   name: "question",
   components: {
-    addDialog
+    addDialog,
+    editDialog
   },
   data() {
     return {
@@ -164,12 +166,14 @@ export default {
       subjectList: [],
       // 是否开启新增框
       AdddialogFormVisible: false,
+      // 是否开启编辑框
+      editdialogFormVisible: false,
       // 页码
       page: 1,
       // 页容量
       limit: 2,
       // 页容量数组
-      pageSizes: [3, 6, 9, 12],
+      pageSizes: [2, 6, 9, 12],
       // 总条数
       total: 0
     };
@@ -251,6 +255,23 @@ export default {
           });
         })
         .catch(() => {});
+    },
+    // 清除数据
+    clear() {
+      (this.formInline = {}),
+        // 重新获取数据
+        this.getData();
+    },
+    // 打开编辑框
+    showEdit(item) {
+      // 修改布尔值
+      this.editdialogFormVisible = true;
+      // 深拷贝
+      this.$refs.editDialog.editform = JSON.parse(JSON.stringify(item));
+      // 处理城市信息
+      this.$refs.editDialog.editform.city =this.$refs.editDialog.editform.city.split(',')
+      // 数组变字符串
+      this.$refs.editDialog.editform.multiple_select_answer = this.$refs.editDialog.editform.multiple_select_answer.join(',')
     }
   }
 };

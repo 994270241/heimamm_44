@@ -1,21 +1,240 @@
 <template>
-  <!-- 新增对话框 -->
-  <el-dialog class="edit-dialog" title="编辑学科" :visible.sync="$parent.editdialogFormVisible">
-    <el-form :model="editform" :rules="editFormrules" ref="editform">
-      <el-form-item label="学科编号" :label-width="formLabelWidth" prop="rid">
-        <el-input v-model="editform.rid" autocomplete="off"></el-input>
+  <!-- 编辑对话框 -->
+  <el-dialog
+    @opened="opened"
+    class="edit-dialog"
+    fullscreen
+    title="编辑题库"
+    :visible.sync="$parent.editdialogFormVisible"
+  >
+    <el-form :model="editform" :rules="rules" ref="editform">
+      <el-form-item label="学科" :label-width="formLabelWidth" prop="subject">
+        <el-select v-model="editform.subject" placeholder="请选择学科">
+          <el-option
+            v-for="item in $parent.subjectList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="学科名称" :label-width="formLabelWidth" prop="name">
-        <el-input v-model="editform.name" autocomplete="off"></el-input>
+      <el-form-item label="阶段" :label-width="formLabelWidth" prop="step">
+        <el-select v-model="editform.step" placeholder="请选择阶段">
+          <el-option label="初级" :value="1"></el-option>
+          <el-option label="中级" :value="2"></el-option>
+          <el-option label="高级" :value="3"></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="学科简称" :label-width="formLabelWidth">
-        <el-input v-model="editform.short_name" autocomplete="off"></el-input>
+      <el-form-item label="企业" :label-width="formLabelWidth" prop="enterprise">
+        <el-select v-model="editform.enterprise" placeholder="请选择企业">
+          <el-option
+            v-for="item in $parent.enterpriseList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="学科简介" :label-width="formLabelWidth">
-        <el-input v-model="editform.intro" autocomplete="off"></el-input>
+      <el-form-item label="城市" :label-width="formLabelWidth" prop="city">
+        <!-- 将value值 设置为 label的选项 -->
+        <!-- <el-cascader :props="props" v-model="editForm.city" :options="options"></el-cascader> -->
+        <el-cascader v-model="editform.city" :options="options" :props="props"></el-cascader>
       </el-form-item>
-      <el-form-item label="学科备注" :label-width="formLabelWidth">
-        <el-input v-model="editform.remark" autocomplete="off"></el-input>
+
+      <el-form-item label="题型" :label-width="formLabelWidth" prop="type">
+        <el-radio-group v-model="editform.type">
+          <el-radio :label="1">单选</el-radio>
+          <el-radio :label="2">多选</el-radio>
+          <el-radio :label="3">简答</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <el-form-item label="难度" :label-width="formLabelWidth" prop="difficulty">
+        <el-radio-group v-model="editform.difficulty">
+          <el-radio :label="1">简单</el-radio>
+          <el-radio :label="2">一般</el-radio>
+          <el-radio :label="3">困难</el-radio>
+        </el-radio-group>
+      </el-form-item>
+      <!-- 分割线 -->
+      <el-divider></el-divider>
+      <el-form-item label="试题标题" prop="title"></el-form-item>
+      <div class="title-toolbar"></div>
+      <div class="title-content"></div>
+      <!-- 选项区域-单选 -->
+      <el-form-item label="单选" v-if="editform.type == 1" prop="single_select_answer">
+        <el-radio-group v-model="editform.single_select_answer">
+          <!-- 选项A -->
+          <div class="radio-box">
+            <el-radio label="A">A</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[0].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageAUrl" :src="imageAUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项B -->
+          <div class="radio-box">
+            <el-radio label="B">B</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[1].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleBvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageBUrl" :src="imageBUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项C -->
+          <div class="radio-box">
+            <el-radio label="C">C</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[2].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleCvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageCUrl" :src="imageCUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项D -->
+          <div class="radio-box">
+            <el-radio label="D">D</el-radio>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[3].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleDvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageDUrl" :src="imageDUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+        </el-radio-group>
+      </el-form-item>
+      <!-- 选项区域-多选 -->
+      <el-form-item label="多选" v-else-if="editform.type == 2" prop="multiple_select_answer">
+        <el-checkbox-group v-model="editform.multiple_select_answer">
+          <!-- 选项A -->
+          <div class="radio-box">
+            <el-checkbox label="A">A</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[0].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageAUrl" :src="imageAUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项B -->
+          <div class="radio-box">
+            <el-checkbox label="B">B</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[1].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleBvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageBUrl" :src="imageBUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项C -->
+          <div class="radio-box">
+            <el-checkbox label="C">C</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[2].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleCvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageCUrl" :src="imageCUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+          <!-- 选项D -->
+          <div class="radio-box">
+            <el-checkbox label="D">D</el-checkbox>
+            <!-- 输入框 -->
+            <el-input v-model="editform.select_options[3].text" placeholder></el-input>
+            <!-- 上转组件 -->
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadUrl"
+              :show-file-list="false"
+              :on-success="handleDvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="imageDUrl" :src="imageDUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </div>
+        </el-checkbox-group>
+      </el-form-item>
+      <!-- 简答题区域 -->
+      <el-form-item v-else label="简答题" prop="short_answer">
+        <el-input v-model="editform.short_answer" type="textarea" :rows="2"></el-input>
+      </el-form-item>
+      <!-- 分割线 -->
+      <el-divider></el-divider>
+      <!-- 视频上传区域 -->
+      <el-form-item label="解析视频">
+        <el-upload
+          :action="uploadUrl"
+          :show-file-list="false"
+          :on-success="handleVideoSuccess"
+          :before-upload="beforeVideoUpload"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传mp4文件，且不超过2000kb</div>
+        </el-upload>
+        <video :src="VideoUrl" v-if="VideoUrl" controls class="preview-video"></video>
+      </el-form-item>
+      <el-divider></el-divider>
+      <!-- 答案解析富文本 -->
+      <el-form-item label="答案解析" prop="answer_analyze"></el-form-item>
+      <div class="answer-toolbar"></div>
+      <div class="answer-content"></div>
+      <el-divider></el-divider>
+      <!-- 试题备注 -->
+      <el-form-item label="试题备注" prop="remark">
+        <el-input v-model="editform.remark" type="textarea" :rows="2" placeholder></el-input>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -26,35 +245,218 @@
 </template>
 
 <script>
-import { subjectEdit } from "../../../../api/subject.js";
+import { questionEdit } from "../../../../api/question.js";
+// 导入城市插件
+import { regionData } from "element-china-area-data";
+// 导入王编辑器
+import wangeditor from "wangeditor";
 export default {
   data() {
     return {
-      // 新增表单:
-      editform: {},
+      // 级联选择器的数据
+      options: regionData,
+      // 级联选者器绑定的选项
+      props: { expandTrigger: "hover", value: "label" },
+      // 富文本编辑器 标题部分
+      titleEditor: undefined,
+      // 富文本编辑器 答案部分
+      answerEditor: undefined,
+      // 本地预览地址
+      imageAUrl: "",
+      imageBUrl: "",
+      imageCUrl: "",
+      imageDUrl: "",
+      // 文件上传的地址
+      uploadUrl: process.env.VUE_APP_BASEURL + "/question/upload",
+      // 视频的临时地址
+      VideoUrl: "",
+      // 编辑表单:
+      editform: {
+        // 默认单选
+        type: 1,
+        // 多选的答案
+        multiple_select_answer: [],
+        select_options: [
+          {
+            label: "A",
+            text: "狗不理",
+            image: "upload/20191129/fd5f03a07d95e3948860240564b180e4.jpeg"
+          },
+          {
+            label: "B",
+            text: "猫不理",
+            image: "upload/20191129/e93e7bb72accda7f3159cdabc4203991.jpeg"
+          },
+          {
+            label: "C",
+            text: "麻花",
+            image: "upload/20191129/b7caf98be9d0aa6764b0112ba0dfa19e.jpeg"
+          },
+          {
+            label: "D",
+            text: "炸酱面",
+            image: "upload/20191129/4067f19ab53a5e8388ad3459e23110f0.jpeg"
+          }
+        ]
+      },
       // 表单验证规则
-      editFormrules: {
-        rid: [{ required: true, message: "学科编号不能为空", trigger: "blur" }],
-        name: [{ required: true, message: "学科名称不能为空", trigger: "blur" }]
+      rules: {
+        // 学科 subject,
+        subject: [
+          { required: true, message: "学科不能为空", trigger: "change" }
+        ],
+        // 阶段 step,
+        step: [{ required: true, message: "阶段不能为空", trigger: "change" }],
+        // 企业 enterprise,
+        enterprise: [
+          { required: true, message: "企业不能为空", trigger: "change" }
+        ],
+        // 城市 city,
+        city: [{ required: true, message: "城市不能为空", trigger: "change" }],
+        // 题型 type,
+        type: [{ required: true, message: "题型不能为空", trigger: "change" }],
+        // 难度 difficulty,
+        difficulty: [
+          { required: true, message: "难度不能为空", trigger: "change" }
+        ],
+        // 标题 title,
+        title: [{ required: true, message: "标题不能为空", trigger: "change" }],
+        // 答案 single_select_answer,
+        single_select_answer: [
+          { required: true, message: "答案不能为空", trigger: "change" }
+        ],
+        // 解析 answer_analyze,
+        answer_analyze: [
+          { required: true, message: "解析不能为空", trigger: "change" }
+        ],
+        // 备注 remark,
+        remark: [
+          { required: true, message: "备注不能为空", trigger: "change" }
+        ],
+        // 多选的 规则 multiple_select_answer
+        multiple_select_answer: [
+          { required: true, message: "多选不能为空", trigger: "change" }
+        ],
+        // 简答题的 规则 multiple_select_answer
+        short_answer: [
+          { required: true, message: "多选不能为空", trigger: "change" }
+        ]
       },
       // 宽度:
       formLabelWidth: "85px"
     };
   },
   methods: {
-    //   新增学科
+    // 王编辑器
+    opened() {
+      if (this.titleEditor === undefined) {
+        this.titleEditor = new wangeditor(".title-toolbar", ".title-content");
+        this.titleEditor.customConfig.onchange = html => {
+          // html 即变化之后的内容
+          // window.console.log(html);
+          // 设置给标题
+          this.editform.title = html;
+        };
+       
+        this.titleEditor.create();
+         // 设置标题的内容
+        this.titleEditor.txt.html(this.editform.title);
+      }
+      // 答案解析富文本
+      if (this.answerEditor === undefined) {
+        this.answerEditor = new wangeditor(
+          ".answer-toolbar",
+          ".answer-content"
+        );
+        this.answerEditor.customConfig.onchange = html => {
+          // html 即变化之后的内容
+          // window.console.log(html);
+          // 设置给标题
+          this.editform.answer_analyze = html;
+
+          
+        };
+        this.answerEditor.create();
+        // 设置答案解析的内容
+          this.answerEditor.txt.html(this.editform.answer_analyze);
+      }
+      // 处理 资源地址
+      this.imageAUrl = process.env.VUE_APP_BASEURL + "/" + this.editform.select_options[0].image
+      this.imageBUrl = process.env.VUE_APP_BASEURL + "/" + this.editform.select_options[1].image
+      this.imageCUrl = process.env.VUE_APP_BASEURL + "/" + this.editform.select_options[2].image
+      this.imageDUrl = process.env.VUE_APP_BASEURL + "/" + this.editform.select_options[3].image
+      // 视频地址
+      this.VideoUrl = process.env.VUE_APP_BASEURL + "/" + this.editform.video
+    },
+    // 上传组件的钩子
+    handleAvatarSuccess(res, file) {
+      this.imageAUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.editform.select_options[0].image = res.data.url;
+    },
+    // 上传组件的钩子
+    handleBvatarSuccess(res, file) {
+      this.imageBUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.editform.select_options[1].image = res.data.url;
+    },
+    // 上传组件的钩子
+    handleCvatarSuccess(res, file) {
+      this.imageCUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.editform.select_options[2].image = res.data.url;
+    },
+    // 上传组件的钩子
+    handleDvatarSuccess(res, file) {
+      this.imageDUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.editform.select_options[3].image = res.data.url;
+    },
+
+    // 视频上传组件的钩子
+    handleVideoSuccess(res, file) {
+      this.VideoUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.editform.video = res.data.url;
+    },
+    beforeVideoUpload(file) {
+      const isJPG = file.type === "video/mp4";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG或png 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
+    // 验证 的逻辑
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 或 PNG格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
+    //   编辑学科
     submitForm() {
       this.$refs.editform.validate(valid => {
         if (valid) {
           // 对
-          subjectEdit(this.editform).then(res => {
+          questionEdit(this.editform).then(res => {
             window.console.log("编辑学科:", res);
             if (res.code === 200) {
               this.$message.success("编辑成功");
               this.$parent.editdialogFormVisible = false;
-              this.$parent.getSubjectList();
+              this.$parent.getData();
             } else if (res.code === 201) {
-              this.$message.error("学科编号已经存在了，请重新输入");
+              this.$message.error("题库编号已经存在了，请重新输入");
             }
           });
         } else {
@@ -82,6 +484,64 @@ export default {
     .el-dialog__footer {
       text-align: center;
     }
+  }
+
+  .title-toolbar,
+  .answer-toolbar {
+    border: 1px solid #c7c7c7;
+    border-bottom: none;
+  }
+  .title-content,
+  .answer-content {
+    border: 1px solid #c7c7c7;
+    height: 100px;
+  }
+  // 上传组件的样式
+  .avatar-uploader {
+    margin-left: 20px;
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
+  // 表单宽度
+  .el-form {
+    width: 60%;
+    margin: 0 auto;
+  }
+  .el-radio-group {
+    width: 100%;
+  }
+  .radio-box {
+    display: flex;
+    align-items: center;
+    margin-top: 45px;
+    // 小间隙
+    .el-checkbox {
+      margin-right: 30px;
+    }
+  }
+  .preview-video {
+    width: 320px;
   }
 }
 </style>
