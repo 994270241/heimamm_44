@@ -149,10 +149,17 @@
         </el-upload>
         <video :src="VideoUrl" v-if="VideoUrl" class="preview-video"></video>
       </el-form-item>
+      <el-divider></el-divider>
       <!-- 答案解析富文本 -->
       <el-form-item label="答案解析" prop="answer_analyze"></el-form-item>
       <div class="answer-toolbar"></div>
       <div class="answer-content"></div>
+      <el-divider></el-divider>
+      <!-- 试题备注 -->
+      <el-form-item label="试题备注" prop="remark">
+        <el-input v-model="addform.remark" type="textarea" :rows="2" placeholder=""></el-input>
+      </el-form-item>
+
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="$parent.AdddialogFormVisible = false">取 消</el-button>
@@ -170,6 +177,7 @@ import wangeditor from "wangeditor";
 export default {
   data() {
     return {
+      
       // 级联选择器的数据
       options: regionData,
       // 级联选者器绑定的选项
@@ -189,6 +197,7 @@ export default {
       VideoUrl: "",
       // 新增表单:
       addform: {
+        remark : '',
         select_options: [
           {
             label: "A",
