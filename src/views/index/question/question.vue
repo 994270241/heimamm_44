@@ -112,7 +112,7 @@
               type="text"
               v-power="['老师','学生']"
               @click="changeStatus(scope.row)"
-            >{{scope.row.status === 1 ? "启用" : "禁用"}}</el-button>
+            >{{scope.row.status === 1 ? "禁用" : "启用"}}</el-button>
             <el-button type="text" v-power="['老师','学生','管理员']" @click="remmove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -142,7 +142,7 @@ import { enterpriseList } from "../../../api/enterprise";
 // 学科列表接口
 import { subjectList } from "../../../api/subject";
 // 题库列表接口
-import { questionList } from "../../../api/question.js";
+import { questionList,questionStatus } from "../../../api/question.js";
 // 导入新增框
 import addDialog from "./components/addDialog.vue";
 export default {
@@ -207,6 +207,17 @@ export default {
     handleCurrentChange(value){
       this.page = value
       this.getData()
+    },
+    // 状态改变
+    changeStatus(item){
+        questionStatus({
+          id : item.id
+        }).then(res => {
+          if (res.code === 200){
+            this.$message.success('状体修改成功')
+            this.getData()
+          }
+        })
     }
      
   }
