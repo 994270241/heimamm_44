@@ -147,8 +147,12 @@
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">只能上传mp4文件，且不超过2000kb</div>
         </el-upload>
-        <video  :src="VideoUrl" v-if="VideoUrl" class="preview-video"></video>
+        <video :src="VideoUrl" v-if="VideoUrl" class="preview-video"></video>
       </el-form-item>
+      <!-- 答案解析富文本 -->
+      <el-form-item label="答案解析" prop="answer_analyze"></el-form-item>
+      <div class="answer-toolbar"></div>
+      <div class="answer-content"></div>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="$parent.AdddialogFormVisible = false">取 消</el-button>
@@ -172,6 +176,8 @@ export default {
       props: { expandTrigger: "hover", value: "label" },
       // 富文本编辑器 标题部分
       titleEditor: undefined,
+      // 富文本编辑器 答案部分
+      answerEditor: undefined,
       // 本地预览地址
       imageAUrl: "",
       imageBUrl: "",
@@ -180,7 +186,7 @@ export default {
       // 文件上传的地址
       uploadUrl: process.env.VUE_APP_BASEURL + "/question/upload",
       // 视频的临时地址
-      VideoUrl : '',
+      VideoUrl: "",
       // 新增表单:
       addform: {
         select_options: [
@@ -219,7 +225,7 @@ export default {
     // 王编辑器
     opened() {
       if (this.titleEditor === undefined) {
-        this.titleEditor = new wangeditor(".title-toolbar", "title-content");
+        this.titleEditor = new wangeditor(".title-toolbar", ".title-content");
         this.titleEditor.customConfig.onchange = html => {
           // html 即变化之后的内容
           // window.console.log(html);
@@ -228,6 +234,21 @@ export default {
         };
 
         this.titleEditor.create();
+      }
+      // 答案解析富文本
+      if (this.answerEditor === undefined) {
+        this.answerEditor = new wangeditor(
+          ".answer-toolbar",
+          ".answer-content"
+        );
+        this.answerEditor.customConfig.onchange = html => {
+          // html 即变化之后的内容
+          // window.console.log(html);
+          // 设置给标题
+          this.addform.answer_analyze = html;
+        };
+
+        this.answerEditor.create();
       }
     },
     // 上传组件的钩子
@@ -259,7 +280,7 @@ export default {
     handleVideoSuccess(res, file) {
       this.imageDUrl = URL.createObjectURL(file.raw);
       // 设置给第一个选项的 图片地址
-      this.addform.video = res.data.url
+      this.addform.video = res.data.url;
     },
     beforeVideoUpload(file) {
       const isJPG = file.type === "video/mp4";
@@ -314,11 +335,14 @@ export default {
       text-align: center;
     }
   }
-  .title-toolbar {
+
+  .title-toolbar,
+  .answer-toolbar {
     border: 1px solid #c7c7c7;
     border-bottom: none;
   }
-  .title-content {
+  .title-content,
+  .answer-content {
     border: 1px solid #c7c7c7;
     height: 100px;
   }
