@@ -81,7 +81,7 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </div>
-           <!-- 选项B -->
+          <!-- 选项B -->
           <div class="radio-box">
             <el-radio label="B">B</el-radio>
             <!-- 输入框 -->
@@ -98,7 +98,7 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </div>
-           <!-- 选项C -->
+          <!-- 选项C -->
           <div class="radio-box">
             <el-radio label="C">C</el-radio>
             <!-- 输入框 -->
@@ -115,7 +115,7 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </div>
-           <!-- 选项D -->
+          <!-- 选项D -->
           <div class="radio-box">
             <el-radio label="D">D</el-radio>
             <!-- 输入框 -->
@@ -133,6 +133,21 @@
             </el-upload>
           </div>
         </el-radio-group>
+      </el-form-item>
+      <!-- 分割线 -->
+      <el-divider></el-divider>
+      <!-- 视频上传区域 -->
+      <el-form-item label="解析视频">
+        <el-upload
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :show-file-list="false"
+          :on-success="handleVideoSuccess"
+          :before-upload="beforeVideoUpload"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传mp4文件，且不超过2000kb</div>
+        </el-upload>
+        <video  :src="VideoUrl" v-if="VideoUrl" class="preview-video"></video>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -164,7 +179,8 @@ export default {
       imageDUrl: "",
       // 文件上传的地址
       uploadUrl: process.env.VUE_APP_BASEURL + "/question/upload",
-
+      // 视频的临时地址
+      VideoUrl : '',
       // 新增表单:
       addform: {
         select_options: [
@@ -220,26 +236,33 @@ export default {
       // 设置给第一个选项的 图片地址
       this.addform.select_options[0].image = res.data.url;
     },
-     // 上传组件的钩子
+    // 上传组件的钩子
     handleBvatarSuccess(res, file) {
       this.imageBUrl = URL.createObjectURL(file.raw);
       // 设置给第一个选项的 图片地址
       this.addform.select_options[1].image = res.data.url;
     },
-     // 上传组件的钩子
+    // 上传组件的钩子
     handleCvatarSuccess(res, file) {
       this.imageCUrl = URL.createObjectURL(file.raw);
       // 设置给第一个选项的 图片地址
       this.addform.select_options[2].image = res.data.url;
     },
-     // 上传组件的钩子
+    // 上传组件的钩子
     handleDvatarSuccess(res, file) {
       this.imageDUrl = URL.createObjectURL(file.raw);
       // 设置给第一个选项的 图片地址
       this.addform.select_options[3].image = res.data.url;
     },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg" || file.type === "image/png";
+
+    // 视频上传组件的钩子
+    handleVideoSuccess(res, file) {
+      this.imageDUrl = URL.createObjectURL(file.raw);
+      // 设置给第一个选项的 图片地址
+      this.addform.video = res.data.url
+    },
+    beforeVideoUpload(file) {
+      const isJPG = file.type === "video/mp4";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
@@ -342,6 +365,9 @@ export default {
     .el-checkbox {
       margin-right: 30px;
     }
+  }
+  .preview-video {
+    width: 320px;
   }
 }
 </style>
